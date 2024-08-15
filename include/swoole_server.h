@@ -458,6 +458,7 @@ class ThreadFactory : public BaseFactory {
     template <typename _Callable>
     void create_thread(int i, _Callable fn);
     void at_thread_exit(Worker *worker);
+
   public:
     ThreadFactory(Server *server);
     ~ThreadFactory();
@@ -522,7 +523,9 @@ class Server {
     enum Mode {
         MODE_BASE = 1,
         MODE_PROCESS = 2,
+#ifdef SW_THREAD
         MODE_THREAD = 3,
+#endif
     };
 
     enum TaskIpcMode {
@@ -1060,9 +1063,11 @@ class Server {
         return mode_ == MODE_BASE;
     }
 
+#ifdef SW_THREAD
     bool is_thread_mode() {
         return mode_ == MODE_THREAD;
     }
+#endif
 
     bool is_enable_coroutine() {
         if (is_task_worker()) {
@@ -1185,12 +1190,18 @@ class Server {
         return swoole_get_process_type() == SW_PROCESS_USERWORKER;
     }
 
+#ifdef SW_THREAD
     bool is_worker_thread() {
         return is_thread_mode() && swoole_get_thread_type() == Server::THREAD_WORKER;
     }
+#endif
 
     bool is_worker_process() {
-        return !is_thread_mode() && (is_worker() || is_task_worker());
+        return
+#ifdef SW_THREAD
+            !is_thread_mode() &&
+#endif
+            (is_worker() || is_task_worker());
     }
 
     bool is_reactor_thread() {

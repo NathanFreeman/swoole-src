@@ -838,7 +838,11 @@ void ServerObject::on_before_start() {
 
     serv->message_bus.set_allocator(sw_zend_string_allocator());
 
-    if (serv->is_base_mode() || serv->is_thread_mode()) {
+    if (serv->is_base_mode()
+#ifdef SW_THREAD
+        || serv->is_thread_mode()
+#endif
+    ) {
         serv->recv_buffer_allocator = sw_zend_string_allocator();
     }
 

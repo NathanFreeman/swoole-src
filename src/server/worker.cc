@@ -31,9 +31,11 @@ static int Worker_onPipeReceive(Reactor *reactor, Event *event);
 static void Worker_reactor_try_to_exit(Reactor *reactor);
 
 void Server::worker_signal_init(void) {
+#ifdef SW_THREAD
     if (is_thread_mode()) {
         return;
     }
+#endif
     swoole_signal_set(SIGHUP, nullptr);
     swoole_signal_set(SIGPIPE, SIG_IGN);
     swoole_signal_set(SIGUSR1, nullptr);
@@ -341,11 +343,13 @@ bool Server::worker_is_running() {
 }
 
 bool Server::kill_worker(WorkerId worker_id, bool wait_reactor) {
+#ifdef SW_THREAD
     if (is_thread_mode()) {
         DataHead event = {};
         event.type = SW_SERVER_EVENT_SHUTDOWN;
         return send_to_worker_from_worker(get_worker(worker_id), &event, sizeof(event), SW_PIPE_MASTER) != -1;
     }
+#endif
 
     if (worker_id == sw_worker()->id && !wait_reactor) {
         if (swoole_event_is_available()) {

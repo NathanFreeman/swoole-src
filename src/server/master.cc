@@ -422,7 +422,11 @@ int Server::start_check() {
     /**
      * OpenSSL thread-safe
      */
-    if ((is_process_mode() && !single_thread) || is_thread_mode()) {
+    if ((is_process_mode() && !single_thread)
+#ifdef SW_THREAD
+        || is_thread_mode()
+#endif
+    ) {
         swoole_ssl_init_thread_safety();
     }
 #endif
@@ -458,7 +462,11 @@ int Server::start_master_thread(Reactor *reactor) {
         return SW_ERR;
     }
 
-    if (!single_thread && !is_thread_mode()) {
+    if (!single_thread
+#ifdef SW_THREAD
+        && !is_thread_mode()
+#endif
+    ) {
         reactor_thread_barrier.wait();
     }
     if (is_process_mode()) {
@@ -687,9 +695,13 @@ int Server::start() {
         ret = start_reactor_processes();
     } else if (is_process_mode()) {
         ret = start_reactor_threads();
-    } else if (is_thread_mode()) {
+    }
+#ifdef SW_THREAD
+    else if (is_thread_mode()) {
         ret = start_worker_threads();
-    } else {
+    }
+#endif
+    else {
         abort();
         return SW_ERR;
     }
@@ -827,9 +839,13 @@ int Server::create() {
 
     if (is_base_mode()) {
         factory = create_base_factory();
-    } else if (is_thread_mode()) {
+    }
+#ifdef SW_THREAD
+    else if (is_thread_mode()) {
         factory = create_thread_factory();
-    } else {
+    }
+#endif
+    else {
         factory = create_process_factory();
     }
     if (!factory) {
@@ -872,14 +888,18 @@ bool Server::shutdown() {
     pid_t pid;
     if (is_base_mode()) {
         pid = get_manager_pid() == 0 ? get_master_pid() : get_manager_pid();
-    } else if (is_thread_mode()) {
+    }
+#ifdef SW_THREAD
+    else if (is_thread_mode()) {
         if (is_master_thread()) {
             stop_master_thread();
         } else {
             running = false;
         }
         return true;
-    } else {
+    }
+#endif
+    else {
         pid = get_master_pid();
     }
 
@@ -946,9 +966,11 @@ void Server::stop_master_thread() {
         };
         reactor->set_exit_condition(Reactor::EXIT_CONDITION_FORCED_TERMINATION, fn);
     }
+#ifdef SW_THREAD
     if (is_thread_mode()) {
         stop_worker_threads();
     }
+#endif
 }
 
 bool Server::signal_handler_shutdown() {
@@ -1057,9 +1079,13 @@ void Server::destroy() {
     }
     if (is_base_mode()) {
         destroy_base_factory();
-    } else if (is_thread_mode()) {
+    }
+#ifdef SW_THREAD
+    else if (is_thread_mode()) {
         destroy_thread_factory();
-    } else {
+    }
+#endif
+    else {
         destroy_process_factory();
     }
 

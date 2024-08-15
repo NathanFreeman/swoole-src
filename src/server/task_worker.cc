@@ -163,9 +163,11 @@ bool Server::task_unpack(EventData *task, String *buffer, PacketPtr *packet) {
 
 static void TaskWorker_signal_init(ProcessPool *pool) {
     Server *serv = (Server *) pool->ptr;
+#ifdef SW_THREAD
     if (serv->is_thread_mode()) {
         return;
     }
+#endif
     swoole_signal_set(SIGHUP, nullptr);
     swoole_signal_set(SIGPIPE, nullptr);
     swoole_signal_set(SIGUSR1, Server::worker_signal_handler);
@@ -194,6 +196,7 @@ static void TaskWorker_onStart(ProcessPool *pool, Worker *worker) {
         SwooleTG.reactor = nullptr;
     }
 
+#ifdef SW_THREAD
     if (serv->is_thread_mode()) {
         SwooleTG.message_bus = new MessageBus();
         SwooleTG.message_bus->set_id_generator([serv]() { return sw_atomic_fetch_add(&serv->gs->pipe_packet_msg_id, 1); });
@@ -203,6 +206,7 @@ static void TaskWorker_onStart(ProcessPool *pool, Worker *worker) {
             throw std::bad_alloc();
         }
     }
+#endif
 
     TaskWorker_signal_init(pool);
     serv->worker_start_callback(worker);
@@ -226,11 +230,13 @@ static void TaskWorker_onStop(ProcessPool *pool, Worker *worker) {
     Server *serv = (Server *) pool->ptr;
     serv->worker_stop_callback(worker);
 
+#ifdef SW_THREAD
     if (serv->is_thread_mode() ) {
         SwooleTG.message_bus->clear();
         delete SwooleTG.message_bus;
         SwooleTG.message_bus = nullptr;
     }
+#endif
 }
 
 /**
