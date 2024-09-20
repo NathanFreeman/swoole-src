@@ -36,6 +36,7 @@ BEGIN_EXTERN_C()
 #endif
 
 extern const pdo_driver_t swoole_pdo_pgsql_driver;
+extern const struct pdo_stmt_methods swoole_pgsql_stmt_methods;
 
 #include <libpq-fe.h>
 #include <libpq/libpq-fs.h>
