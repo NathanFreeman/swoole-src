@@ -72,8 +72,6 @@ typedef struct {
     Oid oid;
 } pdo_pgsql_bound_param;
 
-extern const pdo_driver_t pdo_pgsql_driver;
-
 extern int pdo_pgsql_scanner(pdo_scanner_t *s);
 
 extern int _pdo_pgsql_error(
