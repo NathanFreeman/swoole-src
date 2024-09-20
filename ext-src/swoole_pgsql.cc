@@ -22,10 +22,12 @@
 #include "swoole_coroutine_system.h"
 
 #ifdef SW_USE_PGSQL
-#if PHP_VERSION_ID > 80100
+#if PHP_VERSION_ID >= 80100 && PHP_VERSION_ID < 80300
 #include "thirdparty/php81/pdo_pgsql/php_pdo_pgsql_int.h"
+#elif PHP_VERSION_ID >= 80300 && PHP_VERSION_ID < 80400
+#include "thirdparty/php83/pdo_pgsql/php_pdo_pgsql_int.h"
 #else
-#include "thirdparty/php80/pdo_pgsql/php_pdo_pgsql_int.h"
+#include "thirdparty/php84/pdo_pgsql/php_pdo_pgsql_int.h"
 #endif
 
 using swoole::Reactor;
