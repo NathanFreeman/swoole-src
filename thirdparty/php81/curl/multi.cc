@@ -270,8 +270,8 @@ PHP_FUNCTION(swoole_native_curl_multi_exec) {
         }
     }
 
-    still_running = zval_get_long(z_still_running);
-    error = curl_multi_perform(mh->multi, &still_running);
+    error = mh->multi->perform();
+    still_running = mh->multi->get_running_handles();
     ZEND_TRY_ASSIGN_REF_LONG(z_still_running, still_running);
 
     SAVE_CURLM_ERROR(mh, error);
@@ -324,7 +324,7 @@ PHP_FUNCTION(swoole_native_curl_multi_info_read) {
         RETURN_FALSE;
     }
 
-    tmp_msg = curl_multi_info_read(mh->multi, &queued_msgs);
+    tmp_msg = curl_multi_info_read(mh->multi->get_multi_handle(), &queued_msgs);
     if (tmp_msg == NULL) {
         RETURN_FALSE;
     }
