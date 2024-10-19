@@ -1012,8 +1012,10 @@ EOF
     swoole_source_file="${ext_src_files} ${lib_src_files}"
 
     swoole_source_file="$swoole_source_file \
-        thirdparty/php/curl/interface.cc \
-        thirdparty/php/curl/multi.cc \
+        thirdparty/php80/curl/interface.cc \
+        thirdparty/php80/curl/multi.cc \
+        thirdparty/php81/curl/interface.cc \
+        thirdparty/php81/curl/multi.cc \
         thirdparty/php/sockets/multicast.cc \
         thirdparty/php/sockets/sendrecvmsg.cc \
         thirdparty/php/sockets/conversions.cc \
@@ -1231,7 +1233,8 @@ EOF
     PHP_ADD_BUILD_DIR($ext_builddir/thirdparty/hiredis)
     PHP_ADD_BUILD_DIR($ext_builddir/thirdparty/php/sockets)
     PHP_ADD_BUILD_DIR($ext_builddir/thirdparty/php/standard)
-    PHP_ADD_BUILD_DIR($ext_builddir/thirdparty/php/curl)
+    PHP_ADD_BUILD_DIR($ext_builddir/thirdparty/php80/curl)
+    PHP_ADD_BUILD_DIR($ext_builddir/thirdparty/php81/curl)
     if test "$PHP_NGHTTP2_DIR" = "no"; then
         PHP_ADD_BUILD_DIR($ext_builddir/thirdparty/nghttp2)
 	fi

@@ -20,7 +20,11 @@
 
 #include "thirdparty/php/standard/proc_open.h"
 #ifdef SW_USE_CURL
-#include "thirdparty/php/curl/curl_interface.h"
+#if PHP_VERSION_ID >= 80100
+#include "thirdparty/php81/curl/curl_interface.h"
+#else
+#include "thirdparty/php80/curl/curl_interface.h"
+#endif
 #endif
 
 #include <unordered_map>

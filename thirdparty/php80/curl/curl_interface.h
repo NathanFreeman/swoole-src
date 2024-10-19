@@ -2,7 +2,7 @@
 
 #include "php_swoole_cxx.h"
 
-#ifdef SW_USE_CURL
+#if defined(SW_USE_CURL) && PHP_VERSION_ID >= 80000 && PHP_VERSION_ID < 80100
 SW_EXTERN_C_BEGIN
 
 #include <curl/curl.h>
