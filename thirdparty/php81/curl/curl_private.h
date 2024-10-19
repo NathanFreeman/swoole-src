@@ -157,7 +157,7 @@ typedef struct _php_curlsh {
     zend_object std;
 } php_curlsh;
 
-#if PHP_VERSION_ID > 80100
+#if PHP_VERSION_ID >= 80200
 typedef zend_result curl_result_t;
 typedef bool curl_bool_t;
 #else
