@@ -24,10 +24,6 @@
 #include <atomic>
 #include <queue>
 
-#ifdef SW_USE_IOURING
-#include <liburing.h>
-#endif
-
 #ifndef O_DIRECT
 #define O_DIRECT 040000
 #endif
@@ -41,36 +37,11 @@ enum AsyncFlag {
 
 struct AsyncEvent {
     size_t task_id;
-#ifdef SW_USE_IOURING
-    size_t count;
-#endif
     uint8_t canceled;
     int error;
-    /**
-     * input & output
-     */
-    void *data;
-#ifdef SW_USE_IOURING
-    const char *pathname;
-    const char *pathname2;
-    struct statx *statxbuf;
-    void *rbuf;
-    const void *wbuf;
-#endif
-    /**
-     * output
-     */
-    ssize_t retval;
-#ifdef SW_USE_IOURING
-    int fd;
-    int flags;
-    int opcode;
-    mode_t mode;
-#endif
-    /**
-     * internal use only
-     */
-    network::Socket *pipe_socket;
+    void *data;                    // input & output
+    ssize_t retval;                // output
+    network::Socket *pipe_socket;  // internal use only
     double timestamp;
     void *object;
     void (*handler)(AsyncEvent *event);
@@ -120,13 +91,28 @@ class AsyncThreads {
 };
 
 #ifdef SW_USE_IOURING
+struct AsyncIouringEvent {
+    int fd;
+    int flags;
+    int opcode;
+    mode_t mode;
+    uint64_t count;  // share with offset
+    ssize_t result;
+    void *rbuf;
+    void *coroutine;
+    const void *wbuf;
+    const char *pathname;
+    const char *pathname2;
+    struct statx *statxbuf;
+};
+
 class AsyncIouring {
   private:
     int ring_fd;
     uint64_t task_num = 0;
     uint64_t entries = 8192;
     struct io_uring ring;
-    std::queue<AsyncEvent *> waiting_tasks;
+    std::queue<AsyncIouringEvent *> waiting_tasks;
     network::Socket *iou_socket = nullptr;
     Reactor *reactor = nullptr;
 
@@ -139,7 +125,7 @@ class AsyncIouring {
         return sqe;
     }
 
-    inline bool submit_iouring_sqe(AsyncEvent *event) {
+    inline bool submit_iouring_sqe(AsyncIouringEvent *event) {
         int ret = io_uring_submit(&ring);
 
         if (ret < 0) {
@@ -185,14 +171,14 @@ class AsyncIouring {
     void add_event();
     void delete_event();
     bool wakeup();
-    bool open(AsyncEvent *event);
-    bool close(AsyncEvent *event);
-    bool wr(AsyncEvent *event);
-    bool statx(AsyncEvent *event);
-    bool mkdir(AsyncEvent *event);
-    bool unlink(AsyncEvent *event);
-    bool rename(AsyncEvent *event);
-    bool fsync(AsyncEvent *event);
+    bool open(AsyncIouringEvent *event);
+    bool close(AsyncIouringEvent *event);
+    bool wr(AsyncIouringEvent *event);
+    bool statx(AsyncIouringEvent *event);
+    bool mkdir(AsyncIouringEvent *event);
+    bool unlink(AsyncIouringEvent *event);
+    bool rename(AsyncIouringEvent *event);
+    bool fsync(AsyncIouringEvent *event);
     inline bool is_empty_waiting_tasks() {
         return waiting_tasks.size() == 0;
     }
@@ -201,6 +187,19 @@ class AsyncIouring {
         return task_num;
     }
 
+    static AsyncIouring *createIouring();
+    static int async(AsyncIouring::opcodes opcode,
+                     int fd = 0,
+                     uint64_t count = 0,
+                     void *rbuf = nullptr,
+                     const void *wbuf = nullptr,
+                     struct statx *statxbuf = nullptr);
+    static int async(AsyncIouring::opcodes opcode,
+                     const char *pathname = nullptr,
+                     const char *pathname2 = nullptr,
+                     struct statx *statxbuf = nullptr,
+                     int flags = 0,
+                     mode_t mode = 0);
     static int callback(Reactor *reactor, Event *event);
 };
 #endif
