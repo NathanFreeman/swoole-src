@@ -2,7 +2,7 @@
 __CURRENT__=`pwd`
 __DIR__=$(cd "$(dirname "$0")";pwd)
 
-export DOCKER_COMPOSE_VERSION="2.33.1"
+export DOCKER_COMPOSE_VERSION="v2.33.1"
 if [ "${SWOOLE_BRANCH}" = "alpine" ]; then
     export PHP_VERSION="${PHP_VERSION}-alpine"
 fi
