@@ -23,6 +23,7 @@ services:
   mysql:
     container_name: "mysql"
     image: "phpswoole/mysql:5.6"
+    platform: linux/amd64
     volumes:
       - ./data/mysql:/var/lib/mysql:rw
       - ./data/run/mysqld:/var/run/mysqld:rw
@@ -48,6 +49,7 @@ services:
   redis:
     container_name: "redis"
     image: "phpswoole/redis:latest"
+    platform: linux/amd64
     volumes:
       - ./data/redis:/var/lib/redis:rw
       - ./data/run/redis:/var/run/redis:rw
@@ -56,18 +58,23 @@ services:
   httpbin:
     container_name: "httpbin"
     image: "kennethreitz/httpbin"
+    platform: linux/amd64
   tinyproxy:
     container_name: "tinyproxy"
     image: "vimagick/tinyproxy"
+    platform: linux/amd64
   golang-h2demo:
     container_name: "golang-h2demo"
     image: "phpswoole/golang-h2demo"
+    platform: linux/amd64
   socks5:
     container_name: "socks5"
     image: "xkuma/socks5"
+    platform: linux/amd64
   ftp:
     container_name: "ftp"
     image: "fauria/vsftpd"
+    platform: linux/amd64
     environment:
       FTP_USER: admin
       FTP_PASS: admin
