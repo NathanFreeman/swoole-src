@@ -65,8 +65,10 @@ services:
   socks5:
     container_name: "socks5"
     image: "txthinking/brook"
+    ports:
+      - 1080:1080
     command:
-      - socks5 --listen :1080
+      - socks5 --listen 0.0.0.0:1080
   ftp:
     container_name: "ftp"
     image: "fauria/vsftpd"
