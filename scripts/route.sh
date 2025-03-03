@@ -59,7 +59,7 @@ start_docker_containers(){
     remove_docker_containers
     cd ${__DIR__} && \
     if [ "$(uname -m)" = "aarch64" ]; then
-      sh build_arm64_images.sh
+      sh build_aarch64_images.sh
     fi
     docker-compose up -d && \
     docker ps -a
