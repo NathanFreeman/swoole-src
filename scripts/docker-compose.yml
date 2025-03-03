@@ -64,7 +64,9 @@ services:
     image: "phpswoole/golang-h2demo"
   socks5:
     container_name: "socks5"
-    image: "swoole/brook"
+    image: "txthinking/brook"
+    command:
+      - socks5 --listen :1080
   ftp:
     container_name: "ftp"
     image: "fauria/vsftpd"
