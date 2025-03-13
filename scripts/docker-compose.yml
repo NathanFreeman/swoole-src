@@ -68,8 +68,8 @@ services:
     privileged: true
     restart: unless-stopped
     ports:
-      - "1080:1080"
-    command: socks5 --listen :1080
+      - "10800:10800"
+    command: socks5 --listen :10800
   ftp:
     container_name: "ftp"
     image: "fauria/vsftpd"
