@@ -64,11 +64,10 @@ services:
     image: "phpswoole/golang-h2demo"
   socks5:
     container_name: "socks5"
-    image: "txthinking/brook"
+    image: "txthinking/brook:latest"
     ports:
       - "1080:1080"
-    command:
-      - socks5 --listen 0.0.0.0:1080
+    command: socks5 --listen :1080
   ftp:
     container_name: "ftp"
     image: "fauria/vsftpd"
