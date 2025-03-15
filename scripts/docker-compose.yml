@@ -65,10 +65,9 @@ services:
   socks5:
     container_name: "socks5"
     image: "txthinking/brook"
-    privileged: true
     ports:
-      - "10801:1080"
-    command: socks5 --listen 0.0.0.0:1080
+      - "10801:10801"
+    command: socks5 --listen 0.0.0.0:10801
   ftp:
     container_name: "ftp"
     image: "stilliard/pure-ftpd"
