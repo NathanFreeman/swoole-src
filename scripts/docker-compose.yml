@@ -55,7 +55,7 @@ services:
         net.core.somaxconn: 65535
   httpbin:
     container_name: "httpbin"
-    image: "kennethreitz/httpbin"
+    image: "arnaudlacour/httpbin"
   tinyproxy:
     container_name: "tinyproxy"
     image: "vimagick/tinyproxy"
