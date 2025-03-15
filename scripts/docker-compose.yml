@@ -65,6 +65,7 @@ services:
   socks5:
     container_name: "socks5"
     image: "txthinking/brook"
+    privileged: true
     ports:
       - "1080:1080"
     command: socks5 --listen 0.0.0.0:1080
@@ -74,4 +75,5 @@ services:
     environment:
       FTP_USER_NAME: admin
       FTP_USER_PASS: admin
+      FTP_USER_HOME: /home/swoole
 
