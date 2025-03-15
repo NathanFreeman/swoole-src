@@ -65,8 +65,6 @@ services:
   socks5:
     container_name: "socks5"
     image: "serjs/go-socks5-proxy"
-    ports:
-      - "1080:1080"
   ftp:
     container_name: "ftp"
     image: "stilliard/pure-ftpd"
