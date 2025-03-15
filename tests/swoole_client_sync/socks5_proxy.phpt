@@ -14,8 +14,8 @@ require TESTS_API_PATH . '/swoole_client/http_get.php';
 $cli = new Swoole\Client(SWOOLE_TCP);
 $cli->set([
     'timeout' => 30,
-    'socks5_host' => '127.0.0.1',
-    'socks5_port' => 10801
+    'socks5_host' => SOCKS5_PROXY_HOST,
+    'socks5_port' => SOCKS5_PROXY_PORT
 ]);
 client_http_v10_get($cli)
 ?>
