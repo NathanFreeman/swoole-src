@@ -69,8 +69,7 @@ services:
       - "1080:1080"
   ftp:
     container_name: "ftp"
-    image: "stilliard/pure-ftpd"
-    profiles: ["amd64"]
+    image: "crazymax/pure-ftpd"
     environment:
       FTP_USER_NAME: admin
       FTP_USER_PASS: admin
