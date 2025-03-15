@@ -65,11 +65,13 @@ services:
   socks5:
     container_name: "socks5"
     image: "txthinking/brook"
+    ports:
+      - "1080:1080"
     command: socks5 --listen 0.0.0.0:1080
   ftp:
     container_name: "ftp"
-    image: "fauria/vsftpd"
+    image: "stilliard/pure-ftpd"
     environment:
-      FTP_USER: admin
-      FTP_PASS: admin
+      FTP_USER_NAME: admin
+      FTP_USER_PASS: admin
 
