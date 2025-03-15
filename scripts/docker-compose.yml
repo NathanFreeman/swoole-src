@@ -67,7 +67,7 @@ services:
     image: "txthinking/brook"
     privileged: true
     ports:
-      - "1080:1080"
+      - "10801:1080"
     command: socks5 --listen 0.0.0.0:1080
   ftp:
     container_name: "ftp"
