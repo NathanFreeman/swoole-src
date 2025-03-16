@@ -35,12 +35,6 @@ check_docker_dependency(){
     fi
 }
 
-create_docker_images(){
-  git clone https://github.com/swoole/golang-h2demo.git
-  apt install -y golang
-  cd ./golang-h2demo && GOOS=linux GOARCH=arm64 go build -o h2demo . && docker build . -t phpswoole/golang-h2demo && cd -
-}
-
 prepare_data_files(){
     cd ${__DIR__} && \
     remove_data_files && \
@@ -80,32 +74,12 @@ remove_docker_containers(){
 
 run_tests_in_docker(){
     docker exec swoole touch /.cienv && \
-    docker exec swoole /swoole-src/scripts/docker-route.sh
+    docker exec swoole /swoole-src/scripts/docker-route.sh $SWOOLE_CI_TYPE
     code=$?
     if [ $code -ne 0 ]; then
         echo "\n❌ Run tests failed! ExitCode: $code"
         exit 1
     fi
-}
-
-run_thread_tests_in_docker(){
-    docker exec swoole touch /.cienv && \
-    docker exec swoole /swoole-src/scripts/docker-thread-route.sh
-    code=$?
-    if [ $code -ne 0 ]; then
-        echo "\n❌ Run thread tests failed! ExitCode: $code"
-        exit 1
-    fi
-}
-
-run_iouring_tests_in_docker(){
-      docker exec swoole touch /.cienv && \
-      docker exec swoole /swoole-src/scripts/docker-iouring-route.sh
-      code=$?
-      if [ $code -ne 0 ]; then
-          echo "\n❌ Run iouring tests failed! ExitCode: $code"
-          exit 1
-      fi
 }
 
 remove_tests_resources(){
@@ -114,8 +88,6 @@ remove_tests_resources(){
 }
 
 check_docker_dependency
-create_docker_images
-
 echo "\n📖 Prepare for files...\n"
 prepare_data_files
 
@@ -123,13 +95,5 @@ echo "📦 Start docker containers...\n"
 start_docker_containers # && trap "remove_tests_resources"
 
 echo "\n⏳ Run tests in docker...\n"
-
-if [ "$SWOOLE_THREAD" = 1 ]; then
-    run_thread_tests_in_docker
-elif [ "$SWOOLE_USE_IOURING" = 1 ]; then
-    run_iouring_tests_in_docker
-else
-    run_tests_in_docker
-fi
-
+run_tests_in_docker
 echo "\n🚀🚀🚀Completed successfully🚀🚀🚀\n"

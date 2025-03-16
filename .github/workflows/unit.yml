@@ -35,6 +35,7 @@ jobs:
         sudo ${{runner.workspace}}/swoole-src/scripts/pecl-install.sh
     - name: Run unit tests
       run: |
+        export SWOOLE_CI_TYPE=NORMAL
         export SWOOLE_BRANCH=${GITHUB_REF##*/}
         export SWOOLE_BUILD_DIR=$(realpath .)
         export PHP_VERSION=${{ matrix.php }}

@@ -32,8 +32,8 @@ jobs:
           echo "`git log -10 --stat --pretty --oneline`"
       - name: Run Swoole test
         run: |
+          export SWOOLE_CI_TYPE=IOURING
           export SWOOLE_BRANCH=${GITHUB_REF##*/}
-          export SWOOLE_USE_IOURING=1
           export SWOOLE_BUILD_DIR=$(realpath .)
           export PHP_VERSION=${{ matrix.php }}
           ${SWOOLE_BUILD_DIR}/scripts/route.sh
