@@ -13,7 +13,7 @@ cd "${__DIR__}"
 if [ "$1" = "THREAD" ]; then
   export SWOOLE_THREAD=1
 elif [ "$1" = "IOURING" ]; then
-  export SWOOLE_USE_IOURING=1
+  export SWOOLE_IOURING=1
 fi
 
 # compile in docker

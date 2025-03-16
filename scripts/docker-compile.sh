@@ -11,7 +11,7 @@ sh library.sh
 cd "${__DIR__}/.." && ./scripts/clear.sh
 phpize
 
-option=--enable-brotli \
+option="--enable-brotli \
        --enable-zstd \
        --enable-openssl \
        --enable-sockets \
@@ -21,11 +21,11 @@ option=--enable-brotli \
        --enable-swoole-pgsql \
        --with-swoole-odbc=unixODBC,/usr \
        --with-swoole-oracle=instantclient,/usr/local/instantclient \
-       --enable-swoole-sqlite
+       --enable-swoole-sqlite"
 
 if [ "$SWOOLE_THREAD" = 1 ]; then
   ./configure $option --enable-swoole-thread
-elif [ "$SWOOLE_USE_IOURING" = 1 ]; then
+elif [ "$SWOOLE_IOURING" = 1 ]; then
   if [ -n "$(php -v | grep "ZTS")" ]; then
      echo "" && echo "🚀 php zts + swoole thread mode + iouring!"
     ./configure --enable-iouring --enable-swoole-thread
