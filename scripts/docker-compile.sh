@@ -23,9 +23,9 @@ option=--enable-brotli \
        --with-swoole-oracle=instantclient,/usr/local/instantclient \
        --enable-swoole-sqlite
 
-if [ "$1" = "THREAD" ]; then
+if [ "$SWOOLE_THREAD" = 1 ]; then
   ./configure $option --enable-swoole-thread
-elif [ "$1" = "IOURING" ]; then
+elif [ "$SWOOLE_USE_IOURING" = 1 ]; then
   if [ -n "$(php -v | grep "ZTS")" ]; then
      echo "" && echo "🚀 php zts + swoole thread mode + iouring!"
     ./configure --enable-iouring --enable-swoole-thread
