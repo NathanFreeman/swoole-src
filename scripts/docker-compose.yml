@@ -1,25 +1,5 @@
 version: '3.4'
 services:
-  swoole:
-    container_name: "swoole"
-    image: "phpswoole/php:${PHP_VERSION}"
-    volumes:
-      - "${SWOOLE_BUILD_DIR}:/swoole-src:rw"
-    working_dir: /swoole-src
-    ulimits:
-      core: -1
-    privileged: true
-    depends_on:
-      - mysql
-      - redis
-      - pgsql
-      - oracle
-    dns:
-      - 8.8.8.8
-      - 1.1.1.1
-    environment:
-      SWOOLE_BRANCH: "${SWOOLE_BRANCH}"
-    command: tail -f /etc/group
   mysql:
     container_name: "mysql"
     image: "mysql:latest"
