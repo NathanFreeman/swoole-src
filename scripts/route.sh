@@ -35,6 +35,15 @@ check_docker_dependency(){
     fi
 }
 
+create_docker_images(){
+  arch=`uname -m`
+  if [ "$arch" = "aarch64" ]; then
+      git clone https://github.com/swoole/golang-h2demo.git
+      apt install -y golang
+      cd ./golang-h2demo && GOOS=linux GOARCH=arm64 go build -o h2demo . && docker build . -t phpswoole/golang-h2demo && cd -
+  fi
+}
+
 prepare_data_files(){
     cd ${__DIR__} && \
     remove_data_files && \
@@ -88,6 +97,7 @@ remove_tests_resources(){
 }
 
 check_docker_dependency
+create_docker_images
 echo "\n📖 Prepare for files...\n"
 prepare_data_files
 
