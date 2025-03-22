@@ -46,7 +46,7 @@ create_docker_images(){
       echo "\n 📢 create ${PHP_VERSION} aarch64 docker image"
       git clone https://github.com/swoole/php-docker.git
       cd php-docker
-      sed -i 's/odbc-mariadb \\//g' Dockerfile
+      sed -i '/odbc-mariadb \\/d' Dockerfile
       cd ${PHP_VERSION} && docker build . -t phpswoole/php:${PHP_VERSION} && cd -
       cd ../
   fi
