@@ -4,6 +4,7 @@ apt install -y libaio-dev libaio1 sqlite3 libsqlite3-dev unixodbc unixodbc-dev l
 
 if [ "`uname -m`" = "aarch64" ]; then
   arch="-arm64"
+  find / -name libmaodbc.so*
 else
   arch="x64"
 fi
