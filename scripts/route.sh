@@ -41,6 +41,18 @@ create_docker_images(){
       git clone https://github.com/swoole/golang-h2demo.git
       apt install -y golang
       cd ./golang-h2demo && GOOS=linux GOARCH=arm64 go build -o h2demo . && docker build . -t phpswoole/golang-h2demo && cd -
+
+      git clone https://github.com/swoole/php-docker.git
+      cd php-docker
+      cd 8.1 && docker build . -t phpswoole/php:8.1 && cd -
+      cd 8.2 && docker build . -t phpswoole/php:8.2 && cd -
+      cd 8.3 && docker build . -t phpswoole/php:8.3 && cd -
+      cd 8.4 && docker build . -t phpswoole/php:8.4 && cd -
+      cd 8.1-zts && docker build . -t phpswoole/php:8.1-zts && cd -
+      cd 8.2-zts && docker build . -t phpswoole/php:8.2-zts && cd -
+      cd 8.3-zts && docker build . -t phpswoole/php:8.3-zts && cd -
+      cd 8.4-zts && docker build . -t phpswoole/php:8.4-zts && cd -
+      cd ../
   fi
 }
 
