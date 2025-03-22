@@ -44,14 +44,14 @@ create_docker_images(){
 
       git clone https://github.com/swoole/php-docker.git
       cd php-docker
-      cd 8.1 && docker build . -t phpswoole/php:8.1 && cd -
-      cd 8.2 && docker build . -t phpswoole/php:8.2 && cd -
-      cd 8.3 && docker build . -t phpswoole/php:8.3 && cd -
-      cd 8.4 && docker build . -t phpswoole/php:8.4 && cd -
-      cd 8.1-zts && docker build . -t phpswoole/php:8.1-zts && cd -
-      cd 8.2-zts && docker build . -t phpswoole/php:8.2-zts && cd -
-      cd 8.3-zts && docker build . -t phpswoole/php:8.3-zts && cd -
-      cd 8.4-zts && docker build . -t phpswoole/php:8.4-zts && cd -
+      cd 8.1-alpine && docker build . -t phpswoole/php:8.1 && cd -
+      cd 8.2-alpine && docker build . -t phpswoole/php:8.2 && cd -
+      cd 8.3-alpine && docker build . -t phpswoole/php:8.3 && cd -
+      cd 8.4-alpine && docker build . -t phpswoole/php:8.4 && cd -
+      cd 8.1-zts-alpine && docker build . -t phpswoole/php:8.1-zts && cd -
+      cd 8.2-zts-alpine && docker build . -t phpswoole/php:8.2-zts && cd -
+      cd 8.3-zts-alpine && docker build . -t phpswoole/php:8.3-zts && cd -
+      cd 8.4-zts-alpine && docker build . -t phpswoole/php:8.4-zts && cd -
       cd ../
   fi
 }
