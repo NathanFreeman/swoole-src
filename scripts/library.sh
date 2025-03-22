@@ -1,7 +1,6 @@
 #!/bin/sh -e
 apt update
-apt install -y libaio-dev libaio1 sqlite3 libsqlite3-dev odbcinst odbc-mariadb unixodbc unixodbc-dev libzstd-dev
-find / -name libmaodbc.so*
+apt install -y libaio-dev libaio1 sqlite3 libsqlite3-dev odbcinst unixodbc unixodbc-dev libzstd-dev
 
 if [ "`uname -m`" = "aarch64" ]; then
   arch="-arm64"
