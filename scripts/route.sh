@@ -38,20 +38,16 @@ check_docker_dependency(){
 create_docker_images(){
   arch=`uname -m`
   if [ "$arch" = "aarch64" ]; then
+      echo "\n 📢 create golang-h2demo aarch64 docker image"
       git clone https://github.com/swoole/golang-h2demo.git
       apt install -y golang
       cd ./golang-h2demo && GOOS=linux GOARCH=arm64 go build -o h2demo . && docker build . -t phpswoole/golang-h2demo && cd -
 
+      echo "\n 📢 create ${PHP_VERSION} aarch64 docker image"
       git clone https://github.com/swoole/php-docker.git
       cd php-docker
-      cd 8.1-alpine && docker build . -t phpswoole/php:8.1 && cd -
-      cd 8.2-alpine && docker build . -t phpswoole/php:8.2 && cd -
-      cd 8.3-alpine && docker build . -t phpswoole/php:8.3 && cd -
-      cd 8.4-alpine && docker build . -t phpswoole/php:8.4 && cd -
-      cd 8.1-zts-alpine && docker build . -t phpswoole/php:8.1-zts && cd -
-      cd 8.2-zts-alpine && docker build . -t phpswoole/php:8.2-zts && cd -
-      cd 8.3-zts-alpine && docker build . -t phpswoole/php:8.3-zts && cd -
-      cd 8.4-zts-alpine && docker build . -t phpswoole/php:8.4-zts && cd -
+      cd ${PHP_VERSION}-alpine && docker build . -t phpswoole/php:${PHP_VERSION} && cd -
+      cd ${PHP_VERSION}-alpine && docker build . -t phpswoole/php:${PHP_VERSION} && cd -
       cd ../
   fi
 }
