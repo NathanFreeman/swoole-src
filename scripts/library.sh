@@ -1,7 +1,7 @@
 #!/bin/sh -e
 tee /etc/apt/sources.list.d/ubuntu.sources > /dev/null <<EOL
 Types: deb
-URIs: http://mirrors.tencentyun.com/ubuntu/
+URIs: https://mirrors.cloud.tencent.com/ubuntu/
 Suites: noble noble-updates noble-backports
 Components: main restricted universe multiverse
 Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
