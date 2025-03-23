@@ -1,12 +1,14 @@
 #!/bin/sh -e
 apt update -y
 apt search odbc*
-apt install -y libaio-dev libaio1 sqlite3 libsqlite3-dev unixodbc unixodbc-dev odbc-mariadb libzstd-dev
+apt install -y libaio-dev libaio1 sqlite3 libsqlite3-dev unixodbc unixodbc-dev libzstd-dev
 
 if [ "`uname -m`" = "aarch64" ]; then
   arch="-arm64"
+  apt install odbc-mdbtools
 else
   arch="x64"
+  apt install odbc-mariadb
 fi
 
 wget -nv https://download.oracle.com/otn_software/linux/instantclient/instantclient-basiclite-linux${arch}.zip
