@@ -1,13 +1,5 @@
 #!/bin/sh -e
-tee /etc/apt/sources.list.d/ubuntu.sources > /dev/null <<EOL
-Types: deb
-URIs: https://mirrors.cloud.tencent.com/ubuntu/
-Suites: noble noble-updates noble-backports
-Components: main restricted universe multiverse
-Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
-EOL
-
-apt update -y
+apt update -y && apt upgrade -y
 apt install -y libaio-dev libaio1 sqlite3 libsqlite3-dev unixodbc unixodbc-dev odbc-mariadb libzstd-dev
 
 if [ "`uname -m`" = "aarch64" ]; then
