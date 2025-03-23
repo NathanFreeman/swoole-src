@@ -6,6 +6,8 @@ if [ "`uname -m`" = "aarch64" ]; then
   arch="-arm64"
   apt-get install -y git cmake make gcc libssl-dev
   wget https://github.com/mariadb-corporation/mariadb-connector-odbc/archive/refs/tags/3.2.5.tar.gz
+  tar zxf 3.2.5.tar.gz
+  cd mariadb-connector-odbc-3.2.5
   mkdir build && cd build
   cmake ../mariadb-connector-odbc-3.2.5/ -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCONC_WITH_UNIT_TESTS=Off -DCMAKE_INSTALL_PREFIX=/usr/local -DWITH_SSL=OPENSSL
   cmake --build . --config RelWithDebInfo
