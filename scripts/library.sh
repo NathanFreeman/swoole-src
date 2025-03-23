@@ -1,4 +1,5 @@
 #!/bin/sh -e
+apt search odbc-mariadb*
 apt update -y && apt upgrade -y
 apt install -y libaio-dev libaio1 sqlite3 libsqlite3-dev unixodbc unixodbc-dev odbc-mariadb libzstd-dev
 
