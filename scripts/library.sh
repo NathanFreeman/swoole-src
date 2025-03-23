@@ -1,8 +1,7 @@
 #!/bin/sh -e
+apt install -y odbc-mariadb
 apt update -y
-apt-get update -y
-apt-cache search mariadb odbc
-apt install -y libaio-dev libaio1 sqlite3 libsqlite3-dev unixodbc unixodbc-dev odbc-mariadb libzstd-dev
+apt install -y libaio-dev libaio1 sqlite3 libsqlite3-dev unixodbc unixodbc-dev libzstd-dev
 
 if [ "`uname -m`" = "aarch64" ]; then
   arch="-arm64"
