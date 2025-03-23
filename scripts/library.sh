@@ -1,6 +1,6 @@
 #!/bin/sh -e
 apt update -y
-apt search odbc-mariadb*
+apt search odbc*
 apt install -y libaio-dev libaio1 sqlite3 libsqlite3-dev unixodbc unixodbc-dev odbc-mariadb libzstd-dev
 
 if [ "`uname -m`" = "aarch64" ]; then
