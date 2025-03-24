@@ -8,7 +8,7 @@ Suites: noble noble-updates noble-backports
 Components: main restricted universe multiverse
 Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
 EOL
-  cat /etc/apt/sources.list.d/ubuntu.source
+  cat /etc/apt/sources.list.d/ubuntu.sources
   arch="-arm64"
 else
   arch="x64"
