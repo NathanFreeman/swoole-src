@@ -1,6 +1,7 @@
 #!/bin/sh -e
 apt update -y
 apt install -y gnupg
+curl -fsSL https://keyserver.ubuntu.com/pks/lookup?op=get\&search=871920D1991BC93C | gpg --dearmor -o /usr/share/keyrings/ubuntu-archive-keyring.gpg
 
 tee /etc/apt/sources.list.d/ubuntu.sources > /dev/null <<EOL
 Types: deb
@@ -9,8 +10,6 @@ Suites: noble noble-updates noble-backports
 Components: main restricted universe multiverse
 Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
 EOL
-
-curl -fsSL https://keyserver.ubuntu.com/pks/lookup?op=get\&search=871920D1991BC93C | gpg --dearmor -o /usr/share/keyrings/ubuntu-archive-keyring.gpg
 
 if [ "`uname -m`" = "aarch64" ]; then
   arch="-arm64"
