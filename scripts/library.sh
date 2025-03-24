@@ -1,17 +1,16 @@
 #!/bin/sh -e
-apt update -y
-apt install -y gnupg
-curl -fsSL https://mirrors.cloud.tencent.com/ubuntu/project/ubuntu-archive-keyring.gpg | gpg --dearmor --yes -o /usr/share/keyrings/ubuntu-archive-keyring.gpg
+if [ "$(uname -m)" = "aarch64" ]; then
+  apt update -y
+  apt install -y gnupg
+  curl -fsSL https://mirrors.cloud.tencent.com/ubuntu-ports/project/ubuntu-archive-keyring.gpg | gpg --dearmor --yes -o /usr/share/keyrings/ubuntu-archive-keyring.gpg
 
-tee /etc/apt/sources.list.d/ubuntu.sources > /dev/null <<EOL
+  tee /etc/apt/sources.list.d/ubuntu.sources >/dev/null <<EOL
 Types: deb
-URIs: https://mirrors.cloud.tencent.com/ubuntu/
+URIs: https://mirrors.cloud.tencent.com/ubuntu-ports/
 Suites: noble noble-updates noble-backports
 Components: main restricted universe multiverse
 Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
 EOL
-
-if [ "`uname -m`" = "aarch64" ]; then
   arch="-arm64"
 else
   arch="x64"
@@ -26,9 +25,9 @@ unzip instantclient-sdk-linux${arch}.zip && rm instantclient-sdk-linux${arch}.zi
 mv instantclient_*_* ./instantclient
 rm ./instantclient/sdk/include/ldap.h
 # fix debug build warning: zend_signal: handler was replaced for signal (2) after startup
-echo DISABLE_INTERRUPT=on > ./instantclient/network/admin/sqlnet.ora
+echo DISABLE_INTERRUPT=on >./instantclient/network/admin/sqlnet.ora
 mv ./instantclient /usr/local/
-echo '/usr/local/instantclient' > /etc/ld.so.conf.d/oracle-instantclient.conf
+echo '/usr/local/instantclient' >/etc/ld.so.conf.d/oracle-instantclient.conf
 ldconfig
 
 wget https://github.com/axboe/liburing/archive/refs/tags/liburing-2.6.tar.gz
