@@ -1,7 +1,4 @@
 #!/bin/sh -e
-apt update -y
-apt install ca-certificates
-
 if [ "`uname -m`" = "aarch64" ]; then
 tee /etc/apt/sources.list.d/ubuntu.sources > /dev/null <<EOL
 Types: deb
@@ -10,15 +7,14 @@ Suites: noble noble-updates noble-backports
 Components: main restricted universe multiverse
 Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
 EOL
-
+  apt update -y --allow-unauthenticated
   arch="-arm64"
 else
+  apt update -y
   arch="x64"
 fi
 
-apt update -y --allow-unauthenticated
 apt install -y libaio-dev libaio1 sqlite3 libsqlite3-dev unixodbc unixodbc-dev libzstd-dev odbc-mariadb
-
 wget -nv https://download.oracle.com/otn_software/linux/instantclient/instantclient-basiclite-linux${arch}.zip
 unzip instantclient-basiclite-linux${arch}.zip && rm instantclient-basiclite-linux${arch}.zip
 wget -nv https://download.oracle.com/otn_software/linux/instantclient/instantclient-sdk-linux${arch}.zip
