@@ -16,7 +16,7 @@ else
   arch="x64"
 fi
 
-apt update -y
+apt update -y --allow-unauthenticated
 apt install -y libaio-dev libaio1 sqlite3 libsqlite3-dev unixodbc unixodbc-dev libzstd-dev odbc-mariadb
 
 wget -nv https://download.oracle.com/otn_software/linux/instantclient/instantclient-basiclite-linux${arch}.zip
