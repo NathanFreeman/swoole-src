@@ -1,6 +1,5 @@
 #!/bin/sh -e
 if [ "$(uname -m)" = "aarch64" ]; then
-  arch="-arm64"
   curl -fsSL https://mirrors.cloud.tencent.com/ubuntu-ports/project/ubuntu-archive-keyring.gpg -o /usr/share/keyrings/ubuntu-archive-keyring.gpg
   tee /etc/apt/sources.list.d/ubuntu.sources >/dev/null <<EOL
 Types: deb
@@ -9,9 +8,10 @@ Suites: noble noble-updates noble-backports
 Components: main restricted universe multiverse
 Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
 EOL
+  arch="-arm64"
   apt clean
   apt update
-  apt install dpkg
+  apt install -y dpkg
 else
   arch="x64"
   apt update
