@@ -1,20 +1,23 @@
 #!/bin/sh -e
 apt update -y
-apt install -y libaio-dev libaio1 sqlite3 libsqlite3-dev unixodbc unixodbc-dev libzstd-dev
+apt install ca-certificates
 
 if [ "`uname -m`" = "aarch64" ]; then
+tee /etc/apt/sources.list.d/ubuntu.sources > /dev/null <<EOL
+Types: deb
+URIs: https://mirrors.cloud.tencent.com/ubuntu/
+Suites: noble noble-updates noble-backports
+Components: main restricted universe multiverse
+Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
+EOL
+
   arch="-arm64"
-  apt-get install -y git cmake make gcc libssl-dev
-  wget https://github.com/mariadb-corporation/mariadb-connector-odbc/archive/refs/tags/3.2.5.tar.gz
-  tar zxf 3.2.5.tar.gz
-  mkdir build && cd build
-  cmake ../mariadb-connector-odbc-3.2.5/ -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCONC_WITH_UNIT_TESTS=Off -DCMAKE_INSTALL_PREFIX=/usr/local -DWITH_SSL=OPENSSL
-  cmake --build . --config RelWithDebInfo
-  make install
 else
   arch="x64"
-  apt install odbc-mariadb
 fi
+
+apt update -y
+apt install -y libaio-dev libaio1 sqlite3 libsqlite3-dev unixodbc unixodbc-dev libzstd-dev odbc-mariadb
 
 wget -nv https://download.oracle.com/otn_software/linux/instantclient/instantclient-basiclite-linux${arch}.zip
 unzip instantclient-basiclite-linux${arch}.zip && rm instantclient-basiclite-linux${arch}.zip
