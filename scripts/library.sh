@@ -1,4 +1,7 @@
 #!/bin/sh -e
+apt update -y
+apt install -y gnupg
+
 tee /etc/apt/sources.list.d/ubuntu.sources > /dev/null <<EOL
 Types: deb
 URIs: https://mirrors.cloud.tencent.com/ubuntu/
