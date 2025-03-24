@@ -1,7 +1,7 @@
 #!/bin/sh -e
 apt update -y
 apt install -y gnupg
-curl -fsSL https://keyserver.ubuntu.com/pks/lookup?op=get\&search=871920D1991BC93C | gpg --dearmor -o /usr/share/keyrings/ubuntu-archive-keyring.gpg
+curl -fsSL https://mirrors.cloud.tencent.com/ubuntu/project/ubuntu-archive-keyring.gpg | gpg --dearmor --yes -o /usr/share/keyrings/ubuntu-archive-keyring.gpg
 
 tee /etc/apt/sources.list.d/ubuntu.sources > /dev/null <<EOL
 Types: deb
