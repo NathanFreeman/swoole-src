@@ -1,8 +1,9 @@
 #!/bin/sh -e
+arch="x64"
 if [ "$(uname -m)" = "aarch64" ]; then
-  apt update -y
-  apt install -y gnupg
-  curl -fsSL https://mirrors.cloud.tencent.com/ubuntu-ports/project/ubuntu-archive-keyring.gpg | gpg --dearmor --yes -o /usr/share/keyrings/ubuntu-archive-keyring.gpg
+  arch="-arm64"
+  curl -fsSL https://mirrors.cloud.tencent.com/ubuntu-ports/project/ubuntu-archive-keyring.gpg -o /usr/share/keyrings/ubuntu-archive-keyring.gpg
+  ls -al /usr/share/keyrings/ubuntu-archive-keyring.gpg
 
   tee /etc/apt/sources.list.d/ubuntu.sources >/dev/null <<EOL
 Types: deb
@@ -11,9 +12,6 @@ Suites: noble noble-updates noble-backports
 Components: main restricted universe multiverse
 Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
 EOL
-  arch="-arm64"
-else
-  arch="x64"
 fi
 
 apt update -y
