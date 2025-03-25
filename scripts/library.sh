@@ -2,7 +2,7 @@
 apt update
 if [ "$(uname -m)" = "aarch64" ]; then
   arch="-arm64"
-  apt install -y cmake make gcc libssl-dev unixodbc-dev mariadb-server
+  apt install -y cmake make gcc libssl-dev unixodbc-dev libmariadbd-dev
   wget https://github.com/mariadb-corporation/mariadb-connector-odbc/archive/refs/tags/3.2.5.tar.gz
   tar zxf 3.2.5.tar.gz
   mkdir build && cd build
