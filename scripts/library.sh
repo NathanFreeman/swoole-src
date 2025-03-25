@@ -1,12 +1,9 @@
 #!/bin/sh -e
 if [ "$(uname -m)" = "aarch64" ]; then
-  cd /etc/apt/sources.list.d/
-  rm -rf ./*
-  cd -
-
+  apt update
+  apt install -y libzstd-dev zstd
   curl -fsSL https://mirrors.cloud.tencent.com/ubuntu-ports/project/ubuntu-archive-keyring.gpg -o /usr/share/keyrings/ubuntu-archive-keyring.gpg
-
-  tee /etc/apt/sources.list.d/ubuntu.sources >/dev/null <<EOL
+  tee /etc/apt/sources.list >/dev/null <<EOL
 Types: deb
 URIs: https://mirrors.cloud.tencent.com/ubuntu-ports/
 Suites: noble noble-updates noble-backports
