@@ -1,15 +1,17 @@
 #!/bin/sh -e
-apt update
-apt search odbc-maria*
-apt install -y cmake make g++ libmariadb-dev libmariadbd-dev unixodbc-dev
-apt install -y libaio-dev libaio1 sqlite3 libsqlite3-dev libzstd-dev
+tee /etc/apt/sources.list >/dev/null <<EOL
+deb https://mirrors.aliyun.com/ubuntu/ noble main restricted universe multiverse
+deb-src https://mirrors.aliyun.com/ubuntu/ noble main restricted universe multiverse
+deb https://mirrors.aliyun.com/ubuntu/ noble-security main restricted universe multiverse
+deb-src https://mirrors.aliyun.com/ubuntu/ noble-security main restricted universe multiverse
+deb https://mirrors.aliyun.com/ubuntu/ noble-updates main restricted universe multiverse
+deb-src https://mirrors.aliyun.com/ubuntu/ noble-updates main restricted universe multiverse
+deb https://mirrors.aliyun.com/ubuntu/ noble-backports main restricted universe multiverse
+deb-src https://mirrors.aliyun.com/ubuntu/ noble-backports main restricted universe multiverse
+EOL
 
-wget https://github.com/mariadb-corporation/mariadb-connector-odbc/archive/refs/tags/3.2.5.tar.gz
-tar zxf 3.2.5.tar.gz
-mkdir build && cd build
-cmake ../mariadb-connector-odbc-3.2.5/ -DCONC_WITH_UNIT_TESTS=Off -DCMAKE_INSTALL_PREFIX=/usr/local
-cmake --build .
-make install
+apt update
+apt install -y unixodbc-dev libaio-dev libaio1 sqlite3 libsqlite3-dev libzstd-dev odbc-maraidb
 
 if [ "$(uname -m)" = "aarch64" ]; then
   arch="-arm64"
