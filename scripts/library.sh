@@ -1,6 +1,11 @@
 #!/bin/sh -e
 if [ "$(uname -m)" = "aarch64" ]; then
+  cd /etc/apt/sources.list.d/
+  rm -rf ./*
+  cd -
+
   curl -fsSL https://mirrors.cloud.tencent.com/ubuntu-ports/project/ubuntu-archive-keyring.gpg -o /usr/share/keyrings/ubuntu-archive-keyring.gpg
+
   tee /etc/apt/sources.list.d/ubuntu.sources >/dev/null <<EOL
 Types: deb
 URIs: https://mirrors.cloud.tencent.com/ubuntu-ports/
@@ -8,7 +13,6 @@ Suites: noble noble-updates noble-backports
 Components: main restricted universe multiverse
 Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
 EOL
-  cat /etc/apt/sources.list.d/ubuntu.sources
   arch="-arm64"
 else
   arch="x64"
