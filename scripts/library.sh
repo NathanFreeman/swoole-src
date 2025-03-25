@@ -1,4 +1,5 @@
 #!/bin/sh -e
+apt update
 if [ "$(uname -m)" = "aarch64" ]; then
   arch="-arm64"
   apt install -y mariadb-server
@@ -7,7 +8,6 @@ else
   apt install -y odbc-mariadb
 fi
 
-apt update
 apt install -y libaio-dev libaio1 sqlite3 libsqlite3-dev unixodbc unixodbc-dev libzstd-dev
 wget -nv https://download.oracle.com/otn_software/linux/instantclient/instantclient-basiclite-linux${arch}.zip
 unzip instantclient-basiclite-linux${arch}.zip && rm instantclient-basiclite-linux${arch}.zip
