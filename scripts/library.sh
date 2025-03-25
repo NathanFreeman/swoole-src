@@ -1,6 +1,6 @@
 #!/bin/sh -e
-apt update
-apt upgrade
+apt update && apt install -y gnupg2
+apt-key adv --keyserver keyserver.ubuntu.com --recv 871920D1991BC93C
 
 if [ "$(uname -m)" = "aarch64" ]; then
   arch="-arm64"
@@ -21,7 +21,6 @@ deb ${mirror} noble-backports main restricted universe multiverse
 deb-src ${mirror} noble-backports main restricted universe multiverse
 EOL
 
-wget -O /etc/apt/trusted.gpg.d/ubuntu-archive-keyring.gpg ${mirror}project/ubuntu-archive-keyring.gpg
 apt update
 apt install -y unixodbc-dev libaio-dev libaio1t64 sqlite3 libsqlite3-dev libzstd-dev odbc-mariadb
 wget -nv https://download.oracle.com/otn_software/linux/instantclient/instantclient-basiclite-linux${arch}.zip
