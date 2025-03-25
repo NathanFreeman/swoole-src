@@ -1,20 +1,20 @@
 #!/bin/sh -e
 apt update
+apt install -y cmake make gcc libaio-dev libaio1 sqlite3 libsqlite3-dev libzstd-dev unixodbc unixodbc-dev mariadb-server
+
+wget https://github.com/mariadb-corporation/mariadb-connector-odbc/archive/refs/tags/3.2.5.tar.gz
+tar zxf 3.2.5.tar.gz
+mkdir build && cd build
+cmake ../mariadb-connector-odbc-3.2.5/ -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCONC_WITH_UNIT_TESTS=Off -DCMAKE_INSTALL_PREFIX=/usr/local -DWITH_SSL=OPENSSL
+cmake --build . --config RelWithDebInfo
+make install
+
 if [ "$(uname -m)" = "aarch64" ]; then
   arch="-arm64"
-  apt install -y cmake make gcc libssl-dev unixodbc unixodbc-dev libmariadbd-dev
-  wget https://github.com/mariadb-corporation/mariadb-connector-odbc/archive/refs/tags/3.2.5.tar.gz
-  tar zxf 3.2.5.tar.gz
-  mkdir build && cd build
-  cmake ../mariadb-connector-odbc-3.2.5/ -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCONC_WITH_UNIT_TESTS=Off -DCMAKE_INSTALL_PREFIX=/usr/local -DWITH_SSL=OPENSSL
-  cmake --build . --config RelWithDebInfo
-  make install
 else
   arch="x64"
-  apt install -y unixodbc unixodbc-dev odbc-mariadb
 fi
 
-apt install -y libaio-dev libaio1 sqlite3 libsqlite3-dev libzstd-dev
 wget -nv https://download.oracle.com/otn_software/linux/instantclient/instantclient-basiclite-linux${arch}.zip
 unzip instantclient-basiclite-linux${arch}.zip && rm instantclient-basiclite-linux${arch}.zip
 wget -nv https://download.oracle.com/otn_software/linux/instantclient/instantclient-sdk-linux${arch}.zip
