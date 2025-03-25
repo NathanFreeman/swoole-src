@@ -1,4 +1,7 @@
 #!/bin/sh -e
+apt update
+apt upgrade
+
 if [ "$(uname -m)" = "aarch64" ]; then
   arch="-arm64"
   mirror="https://mirrors.cloud.tencent.com/ubuntu-ports/"
@@ -20,8 +23,6 @@ EOL
 
 wget -O /etc/apt/trusted.gpg.d/ubuntu-archive-keyring.gpg ${mirror}project/ubuntu-archive-keyring.gpg
 apt update
-apt upgrade
-apt install -y --only-upgrade dpkg
 apt install -y unixodbc-dev libaio-dev libaio1t64 sqlite3 libsqlite3-dev libzstd-dev odbc-mariadb
 wget -nv https://download.oracle.com/otn_software/linux/instantclient/instantclient-basiclite-linux${arch}.zip
 unzip instantclient-basiclite-linux${arch}.zip && rm instantclient-basiclite-linux${arch}.zip
