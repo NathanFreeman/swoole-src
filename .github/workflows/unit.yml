@@ -20,21 +20,21 @@ jobs:
       with:
         php-version: "${{ matrix.php }}"
         coverage: none
-    - name: Show machine information
-      run: |
-        date
-        env
-        uname -a
-        ulimit -a
-        php -v
-        php --ini
-        ls -al
-        pwd
-        echo "`git log -20 --pretty --oneline`"
-        echo "`git log -10 --stat --pretty --oneline`"
-    - name: Run pecl-install.sh
-      run: |
-        sudo ${{runner.workspace}}/swoole-src/scripts/pecl-install.sh
+#    - name: Show machine information
+#      run: |
+#        date
+#        env
+#        uname -a
+#        ulimit -a
+#        php -v
+#        php --ini
+#        ls -al
+#        pwd
+#        echo "`git log -20 --pretty --oneline`"
+#        echo "`git log -10 --stat --pretty --oneline`"
+#    - name: Run pecl-install.sh
+#      run: |
+#        sudo ${{runner.workspace}}/swoole-src/scripts/pecl-install.sh
     - name: Run unit tests
       run: |
         export SWOOLE_CI_TYPE=NORMAL

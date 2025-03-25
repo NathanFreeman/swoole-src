@@ -1,4 +1,5 @@
 #!/bin/sh -e
+apt update && apt install gnupg2
 tee /etc/apt/sources.list >/dev/null <<EOL
 deb https://mirrors.cloud.tencent.com/ubuntu-ports/ noble main restricted universe multiverse
 deb-src https://mirrors.cloud.tencent.com/ubuntu-ports/ noble main restricted universe multiverse
