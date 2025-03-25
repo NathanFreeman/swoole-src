@@ -1,6 +1,13 @@
 #!/bin/sh -e
 apt update
-apt install -y libaio-dev libaio1 sqlite3 libsqlite3-dev libzstd-dev unixodbc unixodbc-dev libmariadbd-dev mariadb-server
+apt install -y libaio-dev libaio1 sqlite3 libsqlite3-dev libzstd-dev unixodbc unixodbc-dev libmysql++-dev
+
+wget https://github.com/mariadb-corporation/mariadb-connector-odbc/archive/refs/tags/3.2.5.tar.gz
+tar zxf 3.2.5.tar.gz
+mkdir build && cd build
+cmake ../mariadb-connector-odbc-3.2.5/ -DCONC_WITH_UNIT_TESTS=Off -DCMAKE_INSTALL_PREFIX=/usr/local
+cmake --build .
+make install
 
 if [ "$(uname -m)" = "aarch64" ]; then
   arch="-arm64"
