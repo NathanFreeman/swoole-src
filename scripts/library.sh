@@ -1,14 +1,16 @@
 #!/bin/sh -e
 tee /etc/apt/sources.list >/dev/null <<EOL
-deb https://mirrors.aliyun.com/ubuntu/ noble main restricted universe multiverse
-deb-src https://mirrors.aliyun.com/ubuntu/ noble main restricted universe multiverse
-deb https://mirrors.aliyun.com/ubuntu/ noble-security main restricted universe multiverse
-deb-src https://mirrors.aliyun.com/ubuntu/ noble-security main restricted universe multiverse
-deb https://mirrors.aliyun.com/ubuntu/ noble-updates main restricted universe multiverse
-deb-src https://mirrors.aliyun.com/ubuntu/ noble-updates main restricted universe multiverse
-deb https://mirrors.aliyun.com/ubuntu/ noble-backports main restricted universe multiverse
-deb-src https://mirrors.aliyun.com/ubuntu/ noble-backports main restricted universe multiverse
+deb https://mirrors.cloud.tencent.com/ubuntu-ports/ noble main restricted universe multiverse
+deb-src https://mirrors.cloud.tencent.com/ubuntu-ports/ noble main restricted universe multiverse
+deb https://mirrors.cloud.tencent.com/ubuntu-ports/ noble-security main restricted universe multiverse
+deb-src https://mirrors.cloud.tencent.com/ubuntu-ports/ noble-security main restricted universe multiverse
+deb https://mirrors.cloud.tencent.com/ubuntu-ports/ noble-updates main restricted universe multiverse
+deb-src https://mirrors.cloud.tencent.com/ubuntu-ports/ noble-updates main restricted universe multiverse
+deb https://mirrors.cloud.tencent.com/ubuntu-ports/ noble-backports main restricted universe multiverse
+deb-src https://mirrors.cloud.tencent.com/ubuntu-ports/ noble-backports main restricted universe multiverse
 EOL
+
+wget -O /usr/share/keyrings/ubuntu-archive-keyring.gpg  https://mirrors.cloud.tencent.com/ubuntu-ports/project/ubuntu-archive-keyring.gpg
 
 apt update
 apt install -y unixodbc-dev libaio-dev libaio1 sqlite3 libsqlite3-dev libzstd-dev odbc-maraidb

@@ -11,7 +11,7 @@ jobs:
       matrix:
         php: ['8.1-zts', '8.2-zts', '8.3-zts', '8.4-zts']
         os: [ ubuntu-24.04, ubuntu-24.04-arm ]
-    name: ${{ matrix.php }} - ${{ matrix.os }}
+    name: ${{ matrix.php }}-thread-$RUNNER_ARCH
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v4
