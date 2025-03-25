@@ -1,5 +1,6 @@
 #!/bin/sh -e
 apt update
+apt search odbc-maria*
 apt install -y cmake make g++ libmariadb-dev libmariadbd-dev unixodbc-dev
 apt install -y libaio-dev libaio1 sqlite3 libsqlite3-dev libzstd-dev
 
