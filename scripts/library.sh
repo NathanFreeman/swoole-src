@@ -1,23 +1,14 @@
 #!/bin/sh -e
 if [ "$(uname -m)" = "aarch64" ]; then
-  apt update
-  apt install -y libzstd-dev zstd
-  curl -fsSL https://mirrors.cloud.tencent.com/ubuntu-ports/project/ubuntu-archive-keyring.gpg -o /usr/share/keyrings/ubuntu-archive-keyring.gpg
-  tee /etc/apt/sources.list >/dev/null <<EOL
-Types: deb
-URIs: https://mirrors.cloud.tencent.com/ubuntu-ports/
-Suites: noble noble-updates noble-backports
-Components: main restricted universe multiverse
-Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
-EOL
   arch="-arm64"
+  apt install -y mariadb-server
 else
   arch="x64"
+  apt install -y odbc-mariadb
 fi
 
 apt update
-apt upgrade
-apt install -y libaio-dev libaio1 sqlite3 libsqlite3-dev unixodbc unixodbc-dev libzstd-dev odbc-mariadb
+apt install -y libaio-dev libaio1 sqlite3 libsqlite3-dev unixodbc unixodbc-dev libzstd-dev
 wget -nv https://download.oracle.com/otn_software/linux/instantclient/instantclient-basiclite-linux${arch}.zip
 unzip instantclient-basiclite-linux${arch}.zip && rm instantclient-basiclite-linux${arch}.zip
 wget -nv https://download.oracle.com/otn_software/linux/instantclient/instantclient-sdk-linux${arch}.zip
