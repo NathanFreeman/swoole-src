@@ -10,8 +10,7 @@ deb https://mirrors.cloud.tencent.com/ubuntu-ports/ noble-backports main restric
 deb-src https://mirrors.cloud.tencent.com/ubuntu-ports/ noble-backports main restricted universe multiverse
 EOL
 
-wget -O /usr/share/keyrings/ubuntu-archive-keyring.gpg  https://mirrors.cloud.tencent.com/ubuntu-ports/project/ubuntu-archive-keyring.gpg
-
+apt-key adv --keyserver keyserver.ubuntu.com --recv 871920D1991BC93C
 apt update
 apt install -y unixodbc-dev libaio-dev libaio1 sqlite3 libsqlite3-dev libzstd-dev odbc-maraidb
 
