@@ -1,7 +1,7 @@
 #!/bin/sh -e
 apt update
-apt install -y cmake make gcc libmariadb3 libodbcinst2 odbcinst
-apt install -y libaio-dev libaio1 sqlite3 libsqlite3-dev libzstd-dev unixodbc unixodbc-dev
+apt install -y cmake make g++ libmariadb-dev unixodbc-dev
+apt install -y libaio-dev libaio1 sqlite3 libsqlite3-dev libzstd-dev
 
 wget https://github.com/mariadb-corporation/mariadb-connector-odbc/archive/refs/tags/3.2.5.tar.gz
 tar zxf 3.2.5.tar.gz
