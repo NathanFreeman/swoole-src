@@ -1,23 +1,16 @@
 #!/bin/sh -e
 if [ "$(uname -m)" = "aarch64" ]; then
   arch="-arm64"
-  mirror="https://mirrors.cloud.tencent.com/debian-ports/"
 else
   arch="x64"
-  mirror="https://mirrors.cloud.tencent.com/debian/"
 fi
 
 cat  /etc/apt/sources.list
 
 tee /etc/apt/sources.list >/dev/null <<EOL
-deb ${mirror} noble main restricted universe multiverse
-deb-src ${mirror} noble main restricted universe multiverse
-deb ${mirror} noble-security main restricted universe multiverse
-deb-src ${mirror} noble-security main restricted universe multiverse
-deb ${mirror} noble-updates main restricted universe multiverse
-deb-src ${mirror} noble-updates main restricted universe multiverse
-deb ${mirror} noble-backports main restricted universe multiverse
-deb-src ${mirror} noble-backports main restricted universe multiverse
+deb http://mirrors.cloud.tencent.com/debian bullseye main
+deb http://mirrors.cloud.tencent.com/debian-security bullseye-security main
+deb http://mirrors.cloud.tencent.com/debian bullseye-updates main
 EOL
 
 apt update
