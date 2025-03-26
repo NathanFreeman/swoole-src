@@ -10,6 +10,8 @@ else
   mirror="https://mirror.tuna.tsinghua.edu.cn/ubuntu/"
 fi
 
+wget -O /etc/apt/trusted.gpg.d/ubuntu-archive-keyring.gpg ${mirror}project/ubuntu-archive-keyring.gpg
+
 tee /etc/apt/sources.list >/dev/null <<EOL
 deb ${mirror} noble main restricted universe multiverse
 deb-src ${mirror} noble main restricted universe multiverse
