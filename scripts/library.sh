@@ -4,10 +4,10 @@ apt-key adv --keyserver keyserver.ubuntu.com --recv 871920D1991BC93C
 
 if [ "$(uname -m)" = "aarch64" ]; then
   arch="-arm64"
-  mirror="https://mirrors.cloud.tencent.com/ubuntu-ports/"
+  mirror="https://mirror.tuna.tsinghua.edu.cn/ubuntu/-ports/"
 else
   arch="x64"
-  mirror="https://mirrors.cloud.tencent.com/ubuntu/"
+  mirror="https://mirror.tuna.tsinghua.edu.cn/ubuntu/"
 fi
 
 tee /etc/apt/sources.list >/dev/null <<EOL
