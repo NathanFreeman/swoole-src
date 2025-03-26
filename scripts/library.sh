@@ -1,16 +1,11 @@
 #!/bin/sh -e
-apt update && apt install -y gnupg2
-apt-key adv --keyserver keyserver.ubuntu.com --recv 871920D1991BC93C
-
 if [ "$(uname -m)" = "aarch64" ]; then
   arch="-arm64"
-  mirror="https://mirror.tuna.tsinghua.edu.cn/ubuntu/-ports/"
+  mirror="https://mirrors.cloud.tencent.com/debian-ports/"
 else
   arch="x64"
-  mirror="https://mirror.tuna.tsinghua.edu.cn/ubuntu/"
+  mirror="https://mirrors.cloud.tencent.com/debian/"
 fi
-
-wget -O /etc/apt/trusted.gpg.d/ubuntu-archive-keyring.gpg ${mirror}project/ubuntu-archive-keyring.gpg
 
 tee /etc/apt/sources.list >/dev/null <<EOL
 deb ${mirror} noble main restricted universe multiverse
