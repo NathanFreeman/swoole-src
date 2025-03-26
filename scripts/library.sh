@@ -1,27 +1,20 @@
 #!/bin/sh -e
 if [ "$(uname -m)" = "aarch64" ]; then
   arch="-arm64"
-  mirror="http://mirrors.cloud.tencent.com/ubuntu-ports/"
 else
   arch="x64"
-  mirror="http://mirrors.cloud.tencent.com/ubuntu/"
 fi
 
-wget -O /etc/apt/trusted.gpg.d/ubuntu-archive-keyring.gpg ${mirror}project/ubuntu-archive-keyring.gpg
-
-tee /etc/apt/sources.list >/dev/null <<EOL
-deb ${mirror} noble main restricted universe multiverse
-deb-src ${mirror} noble main restricted universe multiverse
-deb ${mirror} noble-security main restricted universe multiverse
-deb-src ${mirror} noble-security main restricted universe multiverse
-deb ${mirror} noble-updates main restricted universe multiverse
-deb-src ${mirror} noble-updates main restricted universe multiverse
-deb ${mirror} noble-backports main restricted universe multiverse
-deb-src ${mirror} noble-backports main restricted universe multiverse
-EOL
-
 apt update
-apt install -y unixodbc-dev libaio-dev libaio1t64 sqlite3 libsqlite3-dev libzstd-dev odbc-mariadb
+apt install -y cmake make gcc libssl-dev unixodbc-dev libaio-dev libaio1 sqlite3 libsqlite3-dev libzstd-dev
+wget https://github.com/mariadb-corporation/mariadb-connector-odbc/archive/refs/tags/3.1.21.tar.gz
+tar zxf 3.1.21.tar.gz
+mkdir build
+cd build
+cmake ../mariadb-connector-odbc-3.1.21/ -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCONC_WITH_UNIT_TESTS=Off -DCMAKE_INSTALL_PREFIX=/usr/local -DWITH_SSL=OPENSSL
+cmake --build . --config RelWithDebInfo
+make install
+
 wget -nv https://download.oracle.com/otn_software/linux/instantclient/instantclient-basiclite-linux${arch}.zip
 unzip instantclient-basiclite-linux${arch}.zip && rm instantclient-basiclite-linux${arch}.zip
 wget -nv https://download.oracle.com/otn_software/linux/instantclient/instantclient-sdk-linux${arch}.zip
