@@ -1,18 +1,27 @@
 #!/bin/sh -e
 if [ "$(uname -m)" = "aarch64" ]; then
   arch="-arm64"
+  mirror="https://mirrors.cloud.tencent.com/ubuntu-ports/"
 else
   arch="x64"
+  mirror="http://mirrors.cloud.tencent.com/ubuntu/"
 fi
 
+wget -O /etc/apt/trusted.gpg.d/ubuntu-archive-keyring.gpg ${mirror}project/ubuntu-archive-keyring.gpg
+
 tee /etc/apt/sources.list >/dev/null <<EOL
-deb http://mirrors.cloud.tencent.com/debian bullseye main
-deb http://mirrors.cloud.tencent.com/debian-security bullseye-security main
-deb http://mirrors.cloud.tencent.com/debian bullseye-updates main
+deb ${mirror} noble main restricted universe multiverse
+deb-src ${mirror} noble main restricted universe multiverse
+deb ${mirror} noble-security main restricted universe multiverse
+deb-src ${mirror} noble-security main restricted universe multiverse
+deb ${mirror} noble-updates main restricted universe multiverse
+deb-src ${mirror} noble-updates main restricted universe multiverse
+deb ${mirror} noble-backports main restricted universe multiverse
+deb-src ${mirror} noble-backports main restricted universe multiverse
 EOL
 
 apt update
-apt install -y unixodbc-dev libaio-dev libaio1 sqlite3 libsqlite3-dev libzstd-dev odbc-mariadb
+apt install -y unixodbc-dev libaio-dev libaio1t64 sqlite3 libsqlite3-dev libzstd-dev odbc-mariadb
 wget -nv https://download.oracle.com/otn_software/linux/instantclient/instantclient-basiclite-linux${arch}.zip
 unzip instantclient-basiclite-linux${arch}.zip && rm instantclient-basiclite-linux${arch}.zip
 wget -nv https://download.oracle.com/otn_software/linux/instantclient/instantclient-sdk-linux${arch}.zip
