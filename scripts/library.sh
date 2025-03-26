@@ -1,7 +1,7 @@
 #!/bin/sh -e
 if [ "$(uname -m)" = "aarch64" ]; then
   arch="-arm64"
-  mirror="https://mirrors.cloud.tencent.com/ubuntu-ports/"
+  mirror="http://mirrors.cloud.tencent.com/ubuntu-ports/"
 else
   arch="x64"
   mirror="http://mirrors.cloud.tencent.com/ubuntu/"
