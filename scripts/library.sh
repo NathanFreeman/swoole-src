@@ -14,6 +14,8 @@ cd build
 cmake ../mariadb-connector-odbc-3.1.21/ -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCONC_WITH_UNIT_TESTS=Off -DCMAKE_INSTALL_PREFIX=/usr/local -DWITH_SSL=OPENSSL
 cmake --build . --config RelWithDebInfo
 make install
+echo '/usr/local/lib/mariadb/' > /etc/ld.so.conf.d/odbc-mariadb.conf
+ldconfig
 
 wget -nv https://download.oracle.com/otn_software/linux/instantclient/instantclient-basiclite-linux${arch}.zip
 unzip instantclient-basiclite-linux${arch}.zip && rm instantclient-basiclite-linux${arch}.zip
@@ -24,7 +26,7 @@ rm ./instantclient/sdk/include/ldap.h
 # fix debug build warning: zend_signal: handler was replaced for signal (2) after startup
 echo DISABLE_INTERRUPT=on >./instantclient/network/admin/sqlnet.ora
 mv ./instantclient /usr/local/
-echo '/usr/local/instantclient' >/etc/ld.so.conf.d/oracle-instantclient.conf
+echo '/usr/local/instantclient' > /etc/ld.so.conf.d/oracle-instantclient.conf
 ldconfig
 
 wget https://github.com/axboe/liburing/archive/refs/tags/liburing-2.6.tar.gz
