@@ -7,7 +7,7 @@ else
   mirror="https://mirrors.aliyun.com/ubuntu/"
 fi
 
-wget -O /etc/apt/trusted.gpg.d/ ${mirror}project/ubuntu-archive-keyring.gpg
+wget -O /etc/apt/trusted.gpg.d/ubuntu-archive-keyring.gpg ${mirror}project/ubuntu-archive-keyring.gpg
 
 tee /etc/apt/sources.list >/dev/null <<EOL
 deb ${mirror} noble main restricted universe multiverse
