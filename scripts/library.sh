@@ -7,6 +7,8 @@ else
   mirror="https://mirrors.cloud.tencent.com/debian/"
 fi
 
+cat  /etc/apt/sources.list
+
 tee /etc/apt/sources.list >/dev/null <<EOL
 deb ${mirror} noble main restricted universe multiverse
 deb-src ${mirror} noble main restricted universe multiverse
