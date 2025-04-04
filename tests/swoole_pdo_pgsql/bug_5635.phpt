@@ -19,7 +19,7 @@ $pdo->exec('create table bug_5635 (id int, data varchar(1024));');
 $pdo->exec(<<<EOL
 DO $$
 BEGIN
-FOR i IN 1..5000000 LOOP
+FOR i IN 1..6000000 LOOP
 INSERT INTO bug_5635(id, data) VALUES (i, 'data' || i);
 END LOOP;
 END $$;
