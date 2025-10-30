@@ -187,6 +187,30 @@ PHP_FUNCTION(swoole_native_curl_multi_remove_handle) {
 }
 /* }}} */
 
+PHP_FUNCTION(swoole_native_curl_multi_get_handles)
+{
+    zval      *z_mh;
+    php_curlm *mh;
+
+    ZEND_PARSE_PARAMETERS_START(1, 1)
+    Z_PARAM_OBJECT_OF_CLASS(z_mh, curl_multi_ce)
+    ZEND_PARSE_PARAMETERS_END();
+
+    mh = Z_CURL_MULTI_P(z_mh);
+
+    array_init_size(return_value, zend_llist_count(&mh->easyh));
+    zend_hash_real_init_packed(Z_ARRVAL_P(return_value));
+    zend_llist_position pos;
+    zval	*pz_ch;
+
+    for (pz_ch = (zval *)zend_llist_get_first_ex(&mh->easyh, &pos); pz_ch;
+        pz_ch = (zval *)zend_llist_get_next_ex(&mh->easyh, &pos)) {
+
+        Z_TRY_ADDREF_P(pz_ch);
+        add_next_index_zval(return_value, pz_ch);
+    }
+}
+
 /* {{{ Get all the sockets associated with the cURL extension, which can then be "selected" */
 PHP_FUNCTION(swoole_native_curl_multi_select) {
     zval *z_mh;
@@ -206,10 +230,17 @@ PHP_FUNCTION(swoole_native_curl_multi_select) {
         RETURN_FALSE;
     }
 
+#if PHP_VERSION_ID >= 80500
+    if (!(timeout >= 0.0 && timeout <= (INT_MAX / 1000.0))) {
+        zend_argument_value_error(2, "must be between 0 and %f", INT_MAX / 1000.0);
+        RETURN_THROWS();
+    }
+#else
     if (!(timeout >= 0.0 && timeout <= ((double) INT_MAX / 1000.0))) {
         zend_argument_value_error(2, "must be between 0 and %d", (int) ceilf((double) INT_MAX / 1000));
         RETURN_THROWS();
     }
+#endif
 
     RETURN_LONG(mh->multi->select(mh, timeout));
 }
@@ -400,7 +431,11 @@ static int _php_server_push_callback(
     php_curl *ch;
     php_curl *parent;
     php_curlm *mh = (php_curlm *) userp;
+#if PHP_VERSION_ID >= 80500
+    int rval = CURL_PUSH_DENY;
+#else
     size_t rval = CURL_PUSH_DENY;
+#endif
     zval *pz_parent_ch = NULL;
     zval pz_ch;
     zval headers;
@@ -423,10 +458,20 @@ static int _php_server_push_callback(
         handle->multi = parent_handle->multi;
     }
 
+#ifdef PHP_VERSION_ID >= 80500
+    array_init_size(&headers, num_headers);
+    zend_hash_real_init_packed(Z_ARRVAL(headers));
+#else
     array_init(&headers);
+#endif
+
     for (size_t i = 0; i < num_headers; i++) {
         char *header = curl_pushheader_bynum(push_headers, i);
+#ifdef PHP_VERSION_ID >= 80500
+        add_index_string(&headers, i, header);
+#else
         add_next_index_string(&headers, header);
+#endif
     }
 
     ZEND_ASSERT(pz_parent_ch);
@@ -535,11 +580,8 @@ PHP_FUNCTION(swoole_native_curl_multi_setopt) {
                            "The given object is not a valid coroutine CurlMultiHandle object");
         RETURN_FALSE;
     }
-    if (_php_curl_multi_setopt(mh, (CURLMoption) options, zvalue, return_value)) {
-        RETURN_TRUE;
-    } else {
-        RETURN_FALSE;
-    }
+
+    RETURN_BOOL(_php_curl_multi_setopt(mh, (CURLMoption) options, zvalue, return_value));
 }
 /* }}} */
 
@@ -625,7 +667,11 @@ static HashTable *swoole_curl_multi_get_gc(zend_object *object, zval **table, in
 
     zend_get_gc_buffer_use(gc_buffer, table, n);
 
+#if PHP_VERSION_ID >= 80500
+    return NULL;
+#else
     return zend_std_get_properties(object);
+#endif
 }
 
 void curl_multi_register_class(const zend_function_entry *method_entries) {

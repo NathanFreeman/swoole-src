@@ -44,10 +44,6 @@
         (__handle)->err.no = (int) __err;                                                                              \
     } while (0)
 
-PHP_MINIT_FUNCTION(curl);
-PHP_MSHUTDOWN_FUNCTION(curl);
-PHP_MINFO_FUNCTION(curl);
-
 typedef struct {
     zend_fcall_info_cache fcc;
     FILE *fp;
@@ -93,7 +89,11 @@ struct _php_curl_send_headers {
 struct _php_curl_free {
     zend_llist post;
     zend_llist stream;
+#if php_version_id >= 80500
+    HashTable slist;
+#else
     HashTable *slist;
+#endif
 };
 
 typedef struct {

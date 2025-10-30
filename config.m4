@@ -1425,7 +1425,6 @@ EOF
         PHP_ADD_BUILD_DIR($ext_builddir/thirdparty/php81/pdo_oci)
         PHP_ADD_BUILD_DIR($ext_builddir/thirdparty/php83/pdo_oci)
         PHP_ADD_BUILD_DIR($ext_builddir/thirdparty/php84/pdo_oci)
-        PHP_ADD_BUILD_DIR($ext_builddir/thirdparty/php85/pdo_oci)
     fi
     if test "$PHP_SWOOLE_SQLITE" != "no"; then
         PHP_ADD_BUILD_DIR($ext_builddir/thirdparty/php81/pdo_sqlite)

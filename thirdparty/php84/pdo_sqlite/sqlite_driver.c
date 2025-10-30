@@ -18,11 +18,11 @@
 #include "php_swoole_sqlite.h"
 #include "php_swoole_call_stack.h"
 
-#if PHP_VERSION_ID >= 80400
+#if PHP_VERSION_ID >= 80400 && PHP_VERSION_ID < 80500
 #include "php.h"
 #include "php_ini.h"
 #include "ext/standard/info.h"
-#include "pdo/php_pdo.h"
+#include "ext/pdo/php_pdo.h"
 #include "zend_exceptions.h"
 #include "sqlite_driver_arginfo.h"
 
