@@ -109,7 +109,7 @@ TEST(coroutine_system, cancel_sleep) {
     test::coroutine::run([](void *arg) {
         auto co = Coroutine::get_current_safe();
         Coroutine::create([co](void *) {
-            System::sleep(0.002);
+            System::sleep(2);
             co->cancel();
         });
         System::sleep(1000);
