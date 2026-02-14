@@ -183,8 +183,7 @@ void Iouring::yield(IouringEvent *event) {
 
     if ((io_uring_op)event->data.opcode == IORING_OP_TIMEOUT) {
         Coroutine::CancelFunc cancel_fn = [event](Coroutine*) {
-            Iouring::cancel(event);
-            return true;
+            return Iouring::cancel(event) == 0;
         };
         event->coroutine->yield(&cancel_fn);
     } else {
