@@ -37,7 +37,6 @@ static bool swoole_pgsql_blocking = true;
  */
 static const double swoole_pgsql_poll_timeout = 0.1;
 
-static int swoole_pgsql_socket_poll(PGconn *conn, EventType event, bool check_nonblock = false) {
 void swoole_libpq_version(char *buf, size_t len)
 {
     int version = PQlibVersion();
