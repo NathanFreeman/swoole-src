@@ -180,8 +180,16 @@ bool Iouring::ready() const {
 
 void Iouring::yield(IouringEvent *event) {
     ++task_num;
-    // iouring operations cannot be canceled, must wait to be completed.
-    event->coroutine->yield();
+
+    if ((io_uring_op)event->data.opcode == IORING_OP_TIMEOUT) {
+        Coroutine::CancelFunc cancel_fn = [event](Coroutine*) {
+            Iouring::cancel(event);
+            return true;
+        };
+        event->coroutine->yield(&cancel_fn);
+    } else {
+        event->coroutine->yield();
+    }
 }
 
 void Iouring::resume(IouringEvent *event) {
@@ -312,6 +320,8 @@ const char *Iouring::get_opcode_name(io_uring_op opcode) {
         return "POLL_ADD";
     case IORING_OP_POLL_REMOVE:
         return "POLL_REMOVE";
+    case IORING_OP_ASYNC_CANCEL:
+        return "CANCEL";
     default:
         return "unknown";
     }
@@ -420,6 +430,12 @@ void Iouring::dispatch(IouringEvent *event) {
 int Iouring::open(const char *pathname, int flags, mode_t mode) {
     INIT_EVENT(IORING_OP_OPENAT);
     io_uring_prep_open(&event.data, pathname, flags | O_CLOEXEC, mode);
+    return static_cast<int>(execute(&event));
+}
+
+int Iouring::cancel(IouringEvent *prev_event) {
+    INIT_EVENT(IORING_OP_ASYNC_CANCEL);
+    io_uring_prep_cancel(&event.data, (void *) prev_event, IORING_ASYNC_CANCEL_ALL);
     return static_cast<int>(execute(&event));
 }
 
