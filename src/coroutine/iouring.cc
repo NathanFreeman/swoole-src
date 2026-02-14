@@ -253,6 +253,7 @@ bool Iouring::wakeup() {
                  * To maintain compatibility, numerical conversion is necessary.
                  */
                 errno = errno == ECANCELED ? ETIMEDOUT : errno;
+                swoole_set_last_error(errno);
                 event->result = -1;
             }
             resume(ready_events[i]);
