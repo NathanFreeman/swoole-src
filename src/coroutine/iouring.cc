@@ -367,6 +367,7 @@ bool Iouring::dispatch(IouringEvent *event) {
         }
         sqe->opcode = SW_IORING_OP_STATX;
         sqe->off = (uintptr_t) event->statxbuf;
+		sqe->len = STATX_BASIC_STATS | STATX_BTIME;
         break;
     case SW_IORING_OP_MKDIRAT:
         sqe->addr = (uintptr_t) event->pathname;
