@@ -952,7 +952,7 @@ static PHP_METHOD(swoole_http_response, sendfile) {
     zend_long length = 0;
 
     ZEND_PARSE_PARAMETERS_START(1, 3)
-    Z_PARAM_STR(file)
+    Z_PARAM_PATH_STR(file)
     Z_PARAM_OPTIONAL
     Z_PARAM_LONG(offset)
     Z_PARAM_LONG(length)
@@ -1507,7 +1507,7 @@ static PHP_METHOD(swoole_http_response, create) {
             }
         } else
 #endif
-        if (sw_zval_is_co_socket(zobject)) {
+            if (sw_zval_is_co_socket(zobject)) {
             zsocket = zobject;
             fd = php_swoole_get_socket(zobject)->get_fd();
         } else {

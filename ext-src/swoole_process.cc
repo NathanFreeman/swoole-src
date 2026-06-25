@@ -888,11 +888,12 @@ static PHP_METHOD(swoole_process, exec) {
     size_t execfile_len = 0;
     zval *args;
 
-    if (zend_parse_parameters(ZEND_NUM_ARGS(), "sa", &execfile, &execfile_len, &args) == FAILURE) {
-        RETURN_FALSE;
-    }
+    ZEND_PARSE_PARAMETERS_START(1, 2)
+    Z_PARAM_PATH(execfile, execfile_len)
+    Z_PARAM_ZVAL(args)
+    ZEND_PARSE_PARAMETERS_END_EX(RETURN_FALSE);
 
-    if (execfile_len < 1) {
+    if (!execfile || !*execfile) {
         php_swoole_fatal_error(E_WARNING, "exec file name is empty");
         RETURN_FALSE;
     }

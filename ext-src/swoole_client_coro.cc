@@ -412,11 +412,15 @@ static PHP_METHOD(swoole_client_coro, sendfile) {
     zend_long offset = 0;
     zend_long length = 0;
 
-    if (zend_parse_parameters(ZEND_NUM_ARGS(), "s|ll", &file, &file_len, &offset, &length) == FAILURE) {
-        RETURN_FALSE;
-    }
-    if (file_len == 0) {
-        php_swoole_fatal_error(E_WARNING, "file to send is empty");
+    ZEND_PARSE_PARAMETERS_START(1, 3)
+    Z_PARAM_PATH(file, file_len)
+    Z_PARAM_OPTIONAL
+    Z_PARAM_LONG(offset)
+    Z_PARAM_LONG(length)
+    ZEND_PARSE_PARAMETERS_END_EX(RETURN_FALSE);
+
+    if (!file || !*file) {
+        zend_value_error("file to send is empty");
         RETURN_FALSE;
     }
 

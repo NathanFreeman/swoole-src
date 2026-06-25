@@ -778,9 +778,9 @@ SW_API bool php_swoole_export_socket(zval *zobject, SocketImpl *_socket) {
 
 SW_API zend_object *php_swoole_dup_socket(swSocketFd fd, swSocketType type) {
     php_swoole_check_reactor();
-    swSocketFd new_fd = (swSocketFd)dup((int)fd);
+    swSocketFd new_fd = (swSocketFd) dup((int) fd);
     if (new_fd == SW_BAD_SOCKET) {
-        php_swoole_sys_error(E_WARNING, "dup(%d) failed", (int)fd);
+        php_swoole_sys_error(E_WARNING, "dup(%d) failed", (int) fd);
         return nullptr;
     }
     return php_swoole_create_socket_from_fd(new_fd, type);
@@ -1711,14 +1711,14 @@ static PHP_METHOD(swoole_socket_coro, sendFile) {
     zend_long length = 0;
 
     ZEND_PARSE_PARAMETERS_START(1, 3)
-    Z_PARAM_STRING(file, file_len)
+    Z_PARAM_PATH(file, file_len)
     Z_PARAM_OPTIONAL
     Z_PARAM_LONG(offset)
     Z_PARAM_LONG(length)
     ZEND_PARSE_PARAMETERS_END_EX(RETURN_FALSE);
 
-    if (file_len == 0) {
-        php_swoole_fatal_error(E_WARNING, "file to send is empty");
+    if (!file || !*file) {
+        zend_value_error("file to send is empty");
         RETURN_FALSE;
     }
 
@@ -2007,7 +2007,6 @@ static PHP_METHOD(swoole_socket_coro, setOption) {
             RETURN_FALSE;                                                                                              \
         }                                                                                                              \
     } while (0)
-
 
     if (level == IPPROTO_IP) {
         int res = php_do_setsockopt_ip_mcast(sock->socket, level, optname, optval);

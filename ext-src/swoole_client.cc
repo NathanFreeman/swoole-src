@@ -62,7 +62,7 @@ static void client_set_zsocket(const zval *zobject, zval *zsocket) {
 
 static void client_free_object(zend_object *object) {
     auto client_obj = php_swoole_client_fetch_object(object);
-#ifndef _WIN32    
+#ifndef _WIN32
     if (client_obj->async) {
         php_swoole_client_async_free_object(client_obj);
     }
@@ -772,10 +772,14 @@ static PHP_METHOD(swoole_client, sendfile) {
     zend_long offset = 0;
     zend_long length = 0;
 
-    if (zend_parse_parameters(ZEND_NUM_ARGS(), "s|ll", &file, &file_len, &offset, &length) == FAILURE) {
-        RETURN_FALSE;
-    }
-    if (file_len == 0) {
+    ZEND_PARSE_PARAMETERS_START(1, 3)
+    Z_PARAM_PATH(file, file_len)
+    Z_PARAM_OPTIONAL
+    Z_PARAM_LONG(offset)
+    Z_PARAM_LONG(length)
+    ZEND_PARSE_PARAMETERS_END_EX(RETURN_FALSE);
+
+    if (!file || !*file) {
         php_swoole_fatal_error(E_WARNING, "file to send is empty");
         RETURN_FALSE;
     }
@@ -1279,7 +1283,7 @@ static int client_poll_wait(zval *sock_array, const pollfd *fds, int maxevents, 
         if (sock < 0) {
             continue;
         }
-        int poll_key = client_poll_get(fds, maxevents, (swSocketFd)sock);
+        int poll_key = client_poll_get(fds, maxevents, (swSocketFd) sock);
         if (poll_key == -1) {
             php_swoole_fatal_error(E_WARNING, "bad fd[%d]", sock);
             continue;
@@ -1321,11 +1325,11 @@ static uint32_t client_poll_add(const zval *sock_array, uint32_t index, struct p
         key = client_poll_get(fds, maxevents, sock);
     }
     if (key < 0) {
-        fds[index].fd = (swSocketFd)sock;
+        fds[index].fd = (swSocketFd) sock;
         fds[index].events = event;
         index++;
     } else {
-        fds[key].fd = (swSocketFd)sock;
+        fds[key].fd = (swSocketFd) sock;
         fds[key].events |= event;
     }
     SW_HASHTABLE_FOREACH_END();

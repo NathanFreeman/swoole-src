@@ -33,7 +33,7 @@ class Client
 
     public function addFile(string $path, string $name, ?string $type = null, ?string $filename = null, int $offset = 0, int $length = 0): bool {}
 
-    public function addData(string $path, string $name, ?string $type = null, ?string $filename = null): bool {}
+    public function addData(string $data, string $name, ?string $type = null, ?string $filename = null): bool {}
 
     public function execute(string $path): bool {}
 

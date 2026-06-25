@@ -574,7 +574,7 @@ SW_API bool php_swoole_unserialize(const zend_string *data, zval *zv) {
     PHP_VAR_UNSERIALIZE_DESTROY(var_hash);
     if (!unserialized) {
         swoole_warning("unserialize() failed, Error at offset " ZEND_LONG_FMT " of %zd bytes",
-                       (zend_long) ((char *) p - ZSTR_VAL(data)),
+                       (zend_long)((char *) p - ZSTR_VAL(data)),
                        l);
     }
     return unserialized;
@@ -1666,8 +1666,12 @@ static PHP_FUNCTION(swoole_mime_type_get) {
     zend_string *filename;
 
     ZEND_PARSE_PARAMETERS_START(1, 1)
-    Z_PARAM_STR(filename)
+    Z_PARAM_PATH_STR(filename)
     ZEND_PARSE_PARAMETERS_END_EX(RETURN_FALSE);
+
+    if (ZSTR_LEN(filename) == 0) {
+        RETURN_EMPTY_STRING();
+    }
 
     RETURN_STRING(swoole::mime_type::get(ZSTR_VAL(filename)).c_str());
 }
@@ -1676,8 +1680,12 @@ static PHP_FUNCTION(swoole_mime_type_exists) {
     zend_string *filename;
 
     ZEND_PARSE_PARAMETERS_START(1, 1)
-    Z_PARAM_STR(filename)
+    Z_PARAM_PATH_STR(filename)
     ZEND_PARSE_PARAMETERS_END_EX(RETURN_FALSE);
+
+    if (ZSTR_LEN(filename) == 0) {
+        RETURN_FALSE;
+    }
 
     RETURN_BOOL(swoole::mime_type::exists(ZSTR_VAL(filename)));
 }
@@ -1969,7 +1977,7 @@ static PHP_FUNCTION(swoole_substr_unserialize) {
     if ((zend_long) buf_len <= offset) {
         RETURN_FALSE;
     }
-    if (length <= 0 || length > (zend_long) (buf_len - offset)) {
+    if (length <= 0 || length > (zend_long)(buf_len - offset)) {
         length = buf_len - offset;
     }
     zend::unserialize(return_value, buf + offset, length, options ? Z_ARRVAL_P(options) : nullptr);
@@ -2009,7 +2017,7 @@ static PHP_FUNCTION(swoole_substr_json_decode) {
         php_error_docref(nullptr, E_WARNING, "Offset must be less than the length of the string");
         RETURN_NULL();
     }
-    if (length <= 0 || length > (zend_long) (str_len - offset)) {
+    if (length <= 0 || length > (zend_long)(str_len - offset)) {
         length = str_len - offset;
     }
     /* For BC reasons, the bool $assoc overrides the long $options bit for PHP_JSON_OBJECT_AS_ARRAY */

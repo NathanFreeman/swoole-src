@@ -192,11 +192,11 @@ static PHP_METHOD(swoole_thread, __construct) {
     ZendArray *argv = nullptr;
 
     ZEND_PARSE_PARAMETERS_START(1, -1)
-    Z_PARAM_STRING(script_file, l_script_file)
+    Z_PARAM_PATH(script_file, l_script_file)
     Z_PARAM_VARIADIC('+', args, argc)
     ZEND_PARSE_PARAMETERS_END();
 
-    if (l_script_file < 1) {
+    if (!script_file || !*script_file) {
         zend_throw_exception(swoole_exception_ce, "exec file name is empty", SW_ERROR_INVALID_PARAMS);
         return;
     }

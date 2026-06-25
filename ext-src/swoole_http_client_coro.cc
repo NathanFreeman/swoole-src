@@ -1879,7 +1879,7 @@ static PHP_METHOD(swoole_http_client_coro, addFile) {
     zend_long length = 0;
 
     ZEND_PARSE_PARAMETERS_START(2, 6)
-    Z_PARAM_STRING(path, l_path)
+    Z_PARAM_PATH(path, l_path)
     Z_PARAM_STRING(name, l_name)
     Z_PARAM_OPTIONAL
     Z_PARAM_STRING(type, l_type)
@@ -1887,6 +1887,11 @@ static PHP_METHOD(swoole_http_client_coro, addFile) {
     Z_PARAM_LONG(offset)
     Z_PARAM_LONG(length)
     ZEND_PARSE_PARAMETERS_END_EX(RETURN_FALSE);
+
+    if (!path || !*path) {
+        zend_value_error("path cannot be empty");
+        RETURN_FALSE;
+    }
 
     if (offset < 0) {
         offset = 0;

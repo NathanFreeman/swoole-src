@@ -1040,6 +1040,7 @@ std::string intersection(const std::vector<std::string> &vec1, std::set<std::str
 }
 
 double microtime() {
+
     using namespace std::chrono;
     return duration_cast<duration<double>>(system_clock::now().time_since_epoch()).count();
 }

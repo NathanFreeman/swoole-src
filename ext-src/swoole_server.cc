@@ -745,7 +745,7 @@ static bool php_swoole_server_task_unpack(zval *zresult, EventData *task_result)
         PHP_VAR_UNSERIALIZE_DESTROY(var_hash);
         if (!unserialized) {
             swoole_warning("unserialize() failed, Error at offset " ZEND_LONG_FMT " of %zd bytes",
-                           (zend_long) ((char *) p - packet.data),
+                           (zend_long)((char *) p - packet.data),
                            l);
             return false;
         }
@@ -836,9 +836,9 @@ void ServerObject::on_before_start() {
                      (int) primary_port->port,
                      serv->is_base_mode() ? Server::MODE_BASE
 #ifndef _WIN32
-                     : Server::MODE_PROCESS
+                                          : Server::MODE_PROCESS
 #else
-                     : Server::MODE_THREAD
+                                          : Server::MODE_THREAD
 #endif
                      ,
                      (int) primary_port->type);
@@ -1833,7 +1833,7 @@ static int php_swoole_server_dispatch_func(Server *serv, Connection *conn, SendD
 
     *zserv = *(php_swoole_server_zval_ptr(serv));
     ZVAL_LONG(zfd, conn ? conn->session_id : data->info.fd);
-    ZVAL_LONG(ztype, (zend_long) (data ? data->info.type : (int) SW_SERVER_EVENT_CLOSE));
+    ZVAL_LONG(ztype, (zend_long)(data ? data->info.type : (int) SW_SERVER_EVENT_CLOSE));
     if (data && sw_zend_function_max_num_args(cb->ptr()->function_handler) > 3) {
         // TODO: reduce memory copy
         zdata = &args[3];
@@ -2910,11 +2910,16 @@ static PHP_METHOD(swoole_server, sendfile) {
 
     ZEND_PARSE_PARAMETERS_START(2, 4)
     Z_PARAM_LONG(fd)
-    Z_PARAM_STRING(filename, len)
+    Z_PARAM_PATH(filename, len)
     Z_PARAM_OPTIONAL
     Z_PARAM_LONG(offset)
     Z_PARAM_LONG(length)
     ZEND_PARSE_PARAMETERS_END_EX(RETURN_FALSE);
+
+    if (!filename || !*filename) {
+        zend_value_error("file to send is empty");
+        RETURN_FALSE;
+    }
 
     if (serv->is_master()) {
         php_swoole_fatal_error(E_WARNING, "can't sendfile[%s] to the connections in master process", filename);
@@ -3021,8 +3026,7 @@ static PHP_METHOD(swoole_server, stats) {
     }
 
 #ifndef _WIN32
-    if (serv->task_ipc_mode > Server::TASK_IPC_UNIXSOCK
-        && serv->get_task_worker_pool()->queue) {
+    if (serv->task_ipc_mode > Server::TASK_IPC_UNIXSOCK && serv->get_task_worker_pool()->queue) {
         size_t queue_num = -1;
         size_t queue_bytes = -1;
         if (serv->get_task_worker_pool()->queue->stat(&queue_num, &queue_bytes)) {
