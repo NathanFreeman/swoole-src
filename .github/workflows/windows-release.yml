@@ -1,0 +1,106 @@
+name: Windows release builds
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: PHP ${{ matrix.phpver }} ${{ matrix.ts }}
+    runs-on: windows-2022
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        phpver: ['8.2', '8.3', '8.4', '8.5']
+        ts: ['nts', 'ts']
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      # PHP 8.2 and 8.3 dev packs are vs16, while the image only ships VS2022.
+      - name: Install v142 toolset
+        if: matrix.phpver == '8.2' || matrix.phpver == '8.3'
+        shell: powershell
+        run: |
+          $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+          $installPath = & $vswhere -latest -property installationPath
+          & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vs_installer.exe" modify `
+            --quiet --wait --norestart --installPath $installPath `
+            --add Microsoft.VisualStudio.Component.VC.v142.x86.x64
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.phpver }}
+          coverage: none
+          extensions: curl,openssl,pdo,sockets
+        env:
+          phpts: ${{ matrix.ts }}
+
+      - name: Cache PHP deps and devpack
+        uses: actions/cache@v6
+        with:
+          path: |
+            C:\tools\phpdev\deps
+            C:\tools\phpdev\php-*-devel-*-*
+          key: php${{ matrix.phpver }}-${{ runner.os }}-${{ matrix.ts }}-v3
+          restore-keys: |
+            php${{ matrix.phpver }}-${{ runner.os }}-${{ matrix.ts }}-
+            php${{ matrix.phpver }}-${{ runner.os }}-
+
+      - name: Build Swoole extension
+        uses: ./.github/workflows/winext
+        with:
+          ext-path: .
+          tools-path: C:\tools\phpdev
+          phpver: ${{ matrix.phpver }}
+          phpts: ${{ matrix.ts == 'ts' && '1' || '0' }}
+          install: '1'
+          staging-deps: '1'
+          deps: openssl,libcurl,libssh2,zlib,nghttp2,libzstd,brotli
+          conf-args: --enable-swoole-curl --enable-php-sockets${{ matrix.ts == 'ts' && ' --enable-swoole-thread' || '' }}
+
+      - name: Locate php_swoole.dll
+        shell: powershell
+        run: |
+          $dll = Get-ChildItem -Path 'C:\tools\phpdev' -Recurse -Depth 3 -Filter 'php_swoole.dll' | Select-Object -First 1
+          if (-Not $dll) {
+            Write-Error 'php_swoole.dll was not produced'
+            exit 1
+          }
+          "DLL_PATH=$($dll.FullName)" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding ascii
+
+      - name: Pack extension with dependency DLLs
+        shell: powershell
+        run: |
+          $stage = 'pkg'
+          New-Item -ItemType Directory -Path $stage | Out-Null
+          Copy-Item $env:DLL_PATH $stage
+          Get-ChildItem -Path 'C:\tools\phpdev\deps' -Recurse -Depth 4 -Filter '*.dll' | ForEach-Object {
+            Copy-Item $_.FullName $stage -Force
+          }
+          Compress-Archive -Path "$stage\*" -DestinationPath "php_swoole-${{ matrix.phpver }}-${{ matrix.ts }}-x64.zip" -Force
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: php_swoole-${{ matrix.phpver }}-${{ matrix.ts }}-x64
+          path: php_swoole-${{ matrix.phpver }}-${{ matrix.ts }}-x64.zip
+          if-no-files-found: error
+
+      - name: Attach to the release
+        if: github.event_name == 'release'
+        shell: powershell
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        run: |
+          gh release upload $env:RELEASE_TAG "php_swoole-${{ matrix.phpver }}-${{ matrix.ts }}-x64.zip" --clobber
