@@ -62,6 +62,7 @@
 #include <list>
 #include <functional>
 #include <mutex>
+#include <utility>
 
 typedef unsigned long ulong_t;
 
@@ -716,18 +717,22 @@ struct NameResolver {
         bool cluster_ = false;
         bool final_ = false;
         bool exhausted = false;
-        std::function<void(Context *ctx)> dtor;
+        // reset() detaches the owned pointer before invoking this, so a destructor that re-enters
+        // the context (PHP destructors can run arbitrary code) cannot free the data twice.
+        std::function<void(void *data)> dtor;
         const void *resolver = nullptr;
         std::string name;
         int family = 0;
         std::shared_ptr<void> resolver_owner;
 
         void reset() {
-            if (private_data && dtor) {
-                dtor(this);
-            }
+            void *data = private_data;
+            auto dtor_fn = std::move(dtor);
             private_data = nullptr;
             dtor = nullptr;
+            if (data && dtor_fn) {
+                dtor_fn(data);
+            }
             resolver = nullptr;
             resolver_owner.reset();
             cluster_ = final_ = false;

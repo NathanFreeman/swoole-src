@@ -249,8 +249,8 @@ std::string php_swoole_name_resolver_lookup(const std::string &name, NameResolve
                 return "";
             }
             ctx->private_data = zcluster_object;
-            ctx->dtor = [](NameResolver::Context *ctx) {
-                zval *_zcluster_object = (zval *) ctx->private_data;
+            ctx->dtor = [](void *data) {
+                zval *_zcluster_object = static_cast<zval *>(data);
                 zval_dtor(_zcluster_object);
                 efree(_zcluster_object);
             };
