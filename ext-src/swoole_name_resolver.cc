@@ -91,6 +91,11 @@ ZEND_METHOD(Swoole_NameResolver_Context, __construct) {
         zend_throw_error(nullptr, "NameResolver Context is already in use");
         RETURN_THROWS();
     }
+    // reset() can run PHP destructors that re-enter this context; keep it marked in use meanwhile.
+    obj->resolving = true;
+    ON_SCOPE_EXIT {
+        obj->resolving = false;
+    };
     obj->context->reset();
     obj->context->with_port = with_port;
     obj->context->type = family;
