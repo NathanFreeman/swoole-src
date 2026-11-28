@@ -67,6 +67,16 @@ foreach ([new stdClass(), 123, ['host' => 'invalid', 'port' => 80], ['host' => '
         throw new RuntimeException('Invalid result was accepted');
     });
 }
+// A throwing __clone() must propagate its exception and drop the half-built clone.
+check(function () {
+    return new class extends Swoole\NameResolver\Cluster {
+        public function __clone() { throw new RuntimeException('clone failed'); }
+    };
+}, function () {
+    try { swoole_name_resolver_lookup('localhost', new Swoole\NameResolver\Context()); }
+    catch (RuntimeException $e) { same($e->getMessage(), 'clone failed'); return; }
+    throw new RuntimeException('Clone exception was swallowed');
+});
 try { swoole_name_resolver_lookup('localhost', new stdClass()); }
 catch (TypeError $e) { echo "TYPE OK\n"; }
 try { new Swoole\NameResolver\Context(AF_UNIX); }

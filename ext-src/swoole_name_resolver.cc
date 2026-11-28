@@ -15,6 +15,7 @@
  */
 
 #include "php_swoole_cxx.h"
+#include "../include/swoole.h"
 
 BEGIN_EXTERN_C()
 #include "stubs/php_swoole_name_resolver_arginfo.h"
@@ -244,19 +245,34 @@ std::string php_swoole_name_resolver_lookup(const std::string &name, NameResolve
                 ctx->final_ = true;
                 return "";
             }
-            auto *zcluster_object = (zval *) emalloc(sizeof(zval));
-            ZVAL_OBJ(zcluster_object, Z_OBJ_HT(retval)->clone_obj(Z_OBJ(retval)));
+            // Clone first: clone_obj may be null, and __clone() may throw after the clone exists.
+            zend_object_handlers *handlers = Z_OBJ_HT(retval);
+            zend_object *cluster_object = handlers->clone_obj ? handlers->clone_obj(Z_OBJ(retval)) : nullptr;
             zval_ptr_dtor(&retval);
-            if (EG(exception)) {
-                zval_ptr_dtor(zcluster_object);
-                efree(zcluster_object);
+            ZVAL_UNDEF(&retval);
+
+            if (sw_unlikely(!cluster_object)) {
+                if (!EG(exception)) {
+                    zend_type_error("NameResolver::lookup() must return a cloneable Cluster");
+                }
                 ctx->final_ = true;
                 return "";
             }
+
+            if (UNEXPECTED(EG(exception))) {
+                // __clone() threw: drop the half-built clone and let the exception propagate.
+                OBJ_RELEASE(cluster_object);
+                ctx->final_ = true;
+                return "";
+            }
+
+            zval *zcluster_object = (zval *) emalloc(sizeof(zval));
+            ZVAL_OBJ(zcluster_object, cluster_object);
+
             ctx->private_data = zcluster_object;
             ctx->dtor = [](void *data) {
                 zval *_zcluster_object = static_cast<zval *>(data);
-                zval_dtor(_zcluster_object);
+                zval_ptr_dtor(_zcluster_object);
                 efree(_zcluster_object);
             };
             ctx->resolver = _resolver;
