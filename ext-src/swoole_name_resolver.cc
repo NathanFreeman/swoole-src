@@ -220,6 +220,8 @@ bool php_swoole_name_resolver_add(zval *zresolver) {
     return true;
 }
 
+static SW_THREAD_LOCAL zend_class_entry *cluster_ce = nullptr;
+
 std::string php_swoole_name_resolver_lookup(const std::string &name, NameResolver::Context *ctx, void *_resolver) {
     zval retval;
     ZVAL_UNDEF(&retval);
@@ -236,10 +238,13 @@ std::string php_swoole_name_resolver_lookup(const std::string &name, NameResolve
             return "";
         }
         if (Z_TYPE(retval) == IS_OBJECT) {
-            auto class_name = zend_string_init(ZEND_STRL("Swoole\\NameResolver\\Cluster"), false);
-            auto ce = zend_lookup_class(class_name);
-            zend_string_release(class_name);
-            if (!ce || !instanceof_function(Z_OBJCE(retval), ce)) {
+            if (sw_unlikely(!cluster_ce)) {
+                zend_string *class_name = zend_string_init(ZEND_STRL("Swoole\\NameResolver\\Cluster"), false);
+                cluster_ce = zend_lookup_class(class_name);
+                zend_string_release(class_name);
+            }
+
+            if (sw_unlikely(!cluster_ce) || !instanceof_function(Z_OBJCE(retval), cluster_ce)) {
                 zval_ptr_dtor(&retval);
                 zend_type_error("NameResolver::lookup() must return a Cluster, node array, IP string, false or null");
                 ctx->final_ = true;
