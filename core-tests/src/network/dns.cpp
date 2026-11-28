@@ -518,6 +518,58 @@ TEST(dns, name_resolve_2) {
     test::coroutine::run([](void *arg) { name_resolver_test_fn_2(); });
 }
 
+TEST(dns, name_resolve_remove_releases_owner_after_traversal) {
+    struct State {
+        int callbacks = 0;
+        int released = 0;
+        int callbacks_at_release = -1;
+    } state;
+
+    {
+        NameResolver first;
+        first.type = NameResolver::TYPE_USER;
+        first.private_data = &state;
+        first.owner = std::shared_ptr<void>(new int(0), [&state](void *ptr) {
+            state.released++;
+            state.callbacks_at_release = state.callbacks;
+            // Releasing a resolver must not disturb the traversal that removes another one.
+            swoole_name_resolver_each([&state](const std::list<NameResolver>::iterator &iter) -> swTraverseOperation {
+                return iter->private_data == &state ? SW_TRAVERSE_REMOVE : SW_TRAVERSE_KEEP;
+            });
+            delete static_cast<int *>(ptr);
+        });
+        swoole_name_resolver_add(first);
+    }
+    {
+        NameResolver second;
+        second.type = NameResolver::TYPE_USER;
+        second.private_data = &state;
+        second.owner = std::shared_ptr<void>(new int(0), [&state](void *ptr) {
+            state.released++;
+            delete static_cast<int *>(ptr);
+        });
+        swoole_name_resolver_add(second);
+    }
+
+    swoole_name_resolver_each([&state](const std::list<NameResolver>::iterator &iter) -> swTraverseOperation {
+        if (iter->private_data != &state) {
+            return SW_TRAVERSE_KEEP;
+        }
+        state.callbacks++;
+        return SW_TRAVERSE_REMOVE;
+    });
+
+    bool leftover = false;
+    for (const auto &resolver : SwooleTG.name_resolvers) {
+        leftover = leftover || resolver.private_data == &state;
+    }
+    ASSERT_FALSE(leftover);
+    ASSERT_EQ(state.callbacks, 2);
+    ASSERT_EQ(state.released, 2);
+    // The owner is released after the traversal, never while the loop still holds an iterator.
+    ASSERT_EQ(state.callbacks_at_release, 2);
+}
+
 TEST(dns, name_resolve_fail) {
     NameResolver::Context ctx;
     ctx = {AF_INET};

@@ -148,10 +148,16 @@ SW_API void swoole_name_resolver_add(const NameResolver &resolver, bool append) 
 
 SW_API void swoole_name_resolver_each(
     const std::function<swTraverseOperation(const std::list<NameResolver>::iterator &iter)> &fn) {
+    // Detach removed resolvers and release them after the traversal: releasing a PHP resolver's
+    // owner runs its destructor, which may add or remove resolvers and invalidate these iterators.
+    std::list<NameResolver> removed;
     for (auto iter = SwooleTG.name_resolvers.begin(); iter != SwooleTG.name_resolvers.end();) {
         const swTraverseOperation op = fn(iter);
         if (op == SW_TRAVERSE_REMOVE) {
-            iter = SwooleTG.name_resolvers.erase(iter);
+            auto next = iter;
+            ++next;
+            removed.splice(removed.end(), SwooleTG.name_resolvers, iter);
+            iter = next;
         } else if (op == SW_TRAVERSE_STOP) {
             break;
         } else {
