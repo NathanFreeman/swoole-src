@@ -1535,14 +1535,15 @@ PHP_RINIT_FUNCTION(swoole) {
 }
 
 PHP_RSHUTDOWN_FUNCTION(swoole) {
+    php_swoole_name_resolver_rshutdown();
+    php_swoole_client_rshutdown();
+
     if (!SWOOLE_G(cli)) {
-        php_swoole_client_rshutdown();
         return SUCCESS;
     }
 
     SWOOLE_G(req_status) = PHP_SWOOLE_RSHUTDOWN_BEGIN;
 
-    php_swoole_client_rshutdown();
 #ifndef _WIN32
     php_swoole_server_rshutdown();
     php_swoole_http_server_rshutdown();

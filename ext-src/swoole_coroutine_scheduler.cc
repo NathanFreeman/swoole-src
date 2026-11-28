@@ -131,14 +131,6 @@ static bool php_swoole_coroutine_reactor_can_exit(Reactor *reactor, size_t &even
 }
 
 void php_swoole_coroutine_scheduler_rshutdown() {
-    swoole_name_resolver_each([](const std::list<NameResolver>::iterator &iter) -> swTraverseOperation {
-        if (iter->type == NameResolver::TYPE_PHP) {
-            return SW_TRAVERSE_REMOVE;
-        } else {
-            return SW_TRAVERSE_KEEP;
-        }
-    });
-
     if (exit_condition_fci_cache) {
         sw_callable_free(exit_condition_fci_cache);
         exit_condition_fci_cache = nullptr;

@@ -337,3 +337,9 @@ std::string php_swoole_name_resolver_lookup(const std::string &name, NameResolve
 NameResolver::Context *php_swoole_name_resolver_get_context(zval *zobject) {
     return swoole_name_resolver_context_get_handle(Z_OBJ_P(zobject));
 }
+
+void php_swoole_name_resolver_rshutdown() {
+    swoole_name_resolver_each([](const std::list<NameResolver>::iterator &iter) -> swTraverseOperation {
+        return iter->type == NameResolver::TYPE_PHP ? SW_TRAVERSE_REMOVE : SW_TRAVERSE_KEEP;
+    });
+}
