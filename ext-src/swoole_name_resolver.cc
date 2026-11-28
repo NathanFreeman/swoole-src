@@ -15,7 +15,6 @@
  */
 
 #include "php_swoole_cxx.h"
-#include "../include/swoole.h"
 
 BEGIN_EXTERN_C()
 #include "stubs/php_swoole_name_resolver_arginfo.h"
