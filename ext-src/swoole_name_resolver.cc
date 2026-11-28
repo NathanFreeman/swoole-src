@@ -264,7 +264,7 @@ std::string php_swoole_name_resolver_lookup(const std::string &name, NameResolve
                 return "";
             }
             // Clone first: clone_obj may be null, and __clone() may throw after the clone exists.
-            zend_object_handlers *handlers = Z_OBJ_HT(retval);
+            const zend_object_handlers *handlers = Z_OBJ_HT(retval);
             zend_object *cluster_object = handlers->clone_obj ? handlers->clone_obj(Z_OBJ(retval)) : nullptr;
             zval_ptr_dtor(&retval);
             ZVAL_UNDEF(&retval);
