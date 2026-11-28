@@ -36,6 +36,11 @@ struct ContextObject {
     zend_object std;
 };
 
+struct PhpNameResolver {
+    zval object;
+    zend_function *lookup;
+};
+
 static zend_always_inline NameResolver::Context *swoole_name_resolver_context_get_handle(zend_object *object) {
     return reinterpret_cast<ContextObject *>(reinterpret_cast<char *>(object) -
                                              swoole_name_resolver_context_handlers.offset)
@@ -171,13 +176,12 @@ PHP_FUNCTION(swoole_name_resolver_remove) {
             if (iter->type != NameResolver::TYPE_PHP || iter->private_data == nullptr) {
                 return SW_TRAVERSE_KEEP;
             }
-            zval *stored_resolver = static_cast<zval *>(iter->private_data);
-            if (Z_OBJ_P(stored_resolver) == Z_OBJ_P(zresolver)) {
+            auto *stored_resolver = static_cast<PhpNameResolver *>(iter->private_data);
+            if (Z_OBJ(stored_resolver->object) == Z_OBJ_P(zresolver)) {
                 found = true;
                 return SW_TRAVERSE_REMOVE;
-            } else {
-                return SW_TRAVERSE_KEEP;
             }
+            return SW_TRAVERSE_KEEP;
         });
     RETURN_BOOL(found);
 }
@@ -201,7 +205,7 @@ bool php_swoole_name_resolver_add(zval *zresolver) {
     swoole_name_resolver_each(
         [&exists, zresolver](const std::list<NameResolver>::iterator &iter) -> swTraverseOperation {
             if (iter->type == NameResolver::TYPE_PHP && iter->private_data &&
-                Z_OBJ_P(static_cast<zval *>(iter->private_data)) == Z_OBJ_P(zresolver)) {
+                Z_OBJ(static_cast<PhpNameResolver *>(iter->private_data)->object) == Z_OBJ_P(zresolver)) {
                 exists = true;
                 return SW_TRAVERSE_STOP;
             }
@@ -210,11 +214,17 @@ bool php_swoole_name_resolver_add(zval *zresolver) {
     if (exists) {
         return true;
     }
-    auto owner = std::shared_ptr<zval>(sw_zval_dup(zresolver), [](zval *value) {
-        zval_ptr_dtor(value);
-        efree(value);
-    });
-    Z_TRY_ADDREF_P(owner.get());
+    auto owner = std::shared_ptr<PhpNameResolver>(static_cast<PhpNameResolver *>(emalloc(sizeof(PhpNameResolver))),
+                                                  [](PhpNameResolver *payload) {
+                                                      zval_ptr_dtor(&payload->object);
+                                                      efree(payload);
+                                                  });
+
+    ZVAL_COPY(&owner->object, zresolver);
+
+    owner->lookup = static_cast<zend_function *>(
+        zend_hash_str_find_ptr(&Z_OBJCE_P(zresolver)->function_table, ZEND_STRL("lookup")));
+
     NameResolver resolver{php_swoole_name_resolver_lookup, owner.get(), NameResolver::TYPE_PHP, owner};
     swoole_name_resolver_add(resolver);
     return true;
@@ -225,12 +235,16 @@ static SW_THREAD_LOCAL zend_class_entry *cluster_ce = nullptr;
 std::string php_swoole_name_resolver_lookup(const std::string &name, NameResolver::Context *ctx, void *_resolver) {
     zval retval;
     ZVAL_UNDEF(&retval);
-    zval *zresolver = (zval *) _resolver;
+    auto *resolver = static_cast<PhpNameResolver *>(_resolver);
 
     if (!ctx->private_data) {
         zval zname;
         ZVAL_STRINGL(&zname, name.c_str(), name.length());
-        zend_call_method_with_1_params(Z_OBJ_P(zresolver), nullptr, nullptr, "lookup", &retval, &zname);
+        if (sw_likely(resolver->lookup)) {
+            zend_call_known_instance_method_with_1_params(resolver->lookup, Z_OBJ(resolver->object), &retval, &zname);
+        } else {
+            zend_call_method_with_1_params(Z_OBJ(resolver->object), nullptr, nullptr, "lookup", &retval, &zname);
+        }
         zval_dtor(&zname);
         if (EG(exception)) {
             zval_ptr_dtor(&retval);
