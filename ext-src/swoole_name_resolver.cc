@@ -324,11 +324,13 @@ std::string php_swoole_name_resolver_lookup(const std::string &name, NameResolve
                 return "";
             }
         }
+
         if (Z_TYPE(retval) != IS_ARRAY) {
             zval_ptr_dtor(&retval);
             zend_type_error("NameResolver cluster nodes must be arrays");
             return "";
         }
+
         zval *zhost = zend_hash_str_find(Z_ARRVAL(retval), ZEND_STRL("host"));
         zval *zport = zend_hash_str_find(Z_ARRVAL(retval), ZEND_STRL("port"));
         if (!zhost || Z_TYPE_P(zhost) != IS_STRING ||
@@ -339,6 +341,7 @@ std::string php_swoole_name_resolver_lookup(const std::string &name, NameResolve
             zend_value_error("NameResolver node must contain a valid IP host and an integer port between 1 and 65535");
             return "";
         }
+
         std::string result(Z_STRVAL_P(zhost), Z_STRLEN_P(zhost));
         if (!swoole::network::Address::verify_ip(ctx->type, result)) {
             zval_ptr_dtor(&retval);
@@ -347,14 +350,21 @@ std::string php_swoole_name_resolver_lookup(const std::string &name, NameResolve
             }
             return "";
         }
+
         if (ctx->with_port) {
-            result.append(ctx->type == AF_INET6 ? "@" : ":");
-            result.append(std::to_string(Z_LVAL_P(zport)));
+            // Large enough for any long, so the size does not depend on the port validation above.
+            char port_buf[24];
+            const int port_len = swoole_itoa(port_buf, Z_LVAL_P(zport));
+            result.reserve(result.size() + 1 + port_len);
+            result.push_back(ctx->type == AF_INET6 ? '@' : ':');
+            result.append(port_buf, port_len);
         }
+
         if (!ctx->private_data) {
             ctx->resolver = _resolver;
             ctx->exhausted = true;
         }
+
         zval_ptr_dtor(&retval);
         return result;
     }
